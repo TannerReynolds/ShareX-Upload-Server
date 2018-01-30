@@ -8,9 +8,11 @@
 - ### Code (With Syntax Highlighting)
 - ### URL Shortening
 
-## Requirements
+## Installation
 
-- ### Nodejs ~8.0.0 (`https://nodejs.org/en/`)
+- ### Install Nodejs ~8.0.0 (`https://nodejs.org/en/`)
+- ### Download Repository
+- ### Install Dependencies (`npm install` in your terminal)
 
 ## Configuration
 
