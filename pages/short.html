@@ -1,0 +1,238 @@
+<!-- Front End done by Matheus Marsiglio @ matmarsiglio@gmail.com-->
+<head>
+    <script src="https://widget.battleforthenet.com/widget.js" async></script>
+    <title>URL Shortener</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108761931-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-108761931-1');
+</script>
+<meta property="og:title" content="Solace's URL Shortener">
+<meta property="og:description" content="Extensive URL Shortening Service">
+<meta property="og:image" content="http://ovh-is.a-shit.host/23633.png">
+</head>
+<style>
+    @import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #aca49c;
+  font-size: 0.875em;
+}
+
+input:focus::-webkit-input-placeholder, textarea:focus::-webkit-input-placeholder {
+  color: #bbb5af;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  color: #aca49c;
+  font-size: 0.875em;
+}
+
+input:focus::-moz-placeholder, textarea:focus::-moz-placeholder {
+  color: #bbb5af;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #aca49c;
+  font-size: 0.875em;
+}
+
+input:focus::placeholder, textarea::focus:placeholder {
+  color: #bbb5af;
+}
+
+input::-ms-placeholder, textarea::-ms-placeholder {
+  color: #aca49c;
+  font-size: 0.875em;
+}
+
+input:focus::-ms-placeholder, textarea:focus::-ms-placeholder {
+  color: #bbb5af;
+}
+
+/* on hover placeholder */
+
+input:hover::-webkit-input-placeholder, textarea:hover::-webkit-input-placeholder {
+  color: #e2dedb;
+  font-size: 0.875em;
+}
+
+input:hover:focus::-webkit-input-placeholder, textarea:hover:focus::-webkit-input-placeholder {
+  color: #cbc6c1;
+}
+
+input:hover::-moz-placeholder, textarea:hover::-moz-placeholder {
+  color: #e2dedb;
+  font-size: 0.875em;
+}
+
+input:hover:focus::-moz-placeholder, textarea:hover:focus::-moz-placeholder {
+  color: #cbc6c1;
+}
+
+input:hover::placeholder, textarea:hover::placeholder {
+  color: #e2dedb;
+  font-size: 0.875em;
+}
+
+input:hover:focus::placeholder, textarea:hover:focus::placeholder {
+  color: #cbc6c1;
+}
+
+input:hover::placeholder, textarea:hover::placeholder {
+  color: #e2dedb;
+  font-size: 0.875em;
+}
+
+input:hover:focus::-ms-placeholder, textarea:hover::focus:-ms-placeholder {
+  color: #cbc6c1;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  background: #e2dedb;
+  color: #b3aca7;
+}
+
+header {
+  position: relative;
+  margin: 100px 0 25px 0;
+  font-size: 2.3em;
+  text-align: center;
+  letter-spacing: 7px;
+}
+
+#form {
+  position: relative;
+  width: 500px;
+  margin: 50px auto 100px auto;
+}
+
+input {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875em;
+  width: 470px;
+  height: 50px;
+  padding: 0px 15px 0px 15px;
+
+  background: transparent;
+  outline: none;
+  color: #726659;
+
+  border: solid 1px #b3aca7;
+  border-bottom: none;
+
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+}
+#domain, select option {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875em;
+  width: 470px;
+  height: 54px;
+  padding: 0px 15px 0px 15px;
+
+  background: transparent;
+  outline: none;
+  color: #726659;
+
+  border: solid 1px #b3aca7;
+  border-bottom: none;
+
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+}
+#domain:hover, select option:hover {
+  background: #b3aca7;
+  color: #e2dedb;
+}
+input:hover {
+  background: #b3aca7;
+  color: #e2dedb;
+}
+
+textarea {
+  width: 470px;
+  max-width: 470px;
+  height: 110px;
+  max-height: 110px;
+  padding: 15px;
+
+  background: transparent;
+  outline: none;
+
+  color: #726659;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875em;
+
+  border: solid 1px #b3aca7;
+
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+}
+
+textarea:hover {
+  background: #b3aca7;
+  color: #e2dedb;
+}
+
+#submit {
+  width: 470px;
+
+  padding: 0;
+  margin: 0px 0px 0px 0px;
+
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875em;
+  color: #b3aca7;
+
+  outline:none;
+  cursor: pointer;
+
+  border: solid 1px #b3aca7;
+}
+
+#submit:hover {
+  color: #e2dedb;
+}
+    </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    if(window.location.search){
+      if(window.location.search.toString().includes("error")){
+        var error = window.location.search.toString().replace(/(\?error=)+/g, '').replace(/[\_]/g, ' ');
+        $('#main_title').css("color","red");
+        $('#main_title').html("<b>ERROR:</b> "+error);
+      }else{
+        var shortenedURL = window.location.search.toString().replace(/(\?success=)+/g, '').replace(/[\_]/g, ' ');
+        $('#main_title').css("color","green");
+        $('#main_title').html("<b>SHORTENED URL:</b> "+shortenedURL);
+      }
+    }else{
+      $('#main_title').text(window.location.host.toString().toUpperCase() + " URL SHORTENER")
+    }
+    var domains = ["thiccbit.ch", "nuttysu.cc", "kpop4.us", "demoted.me", "getfuc.tk", "iplogger.tk", "iplogger.ga", "iplogger.cf", "iplogger.gq", "a-shit.host", "big-pecker.fun", "discord-bot.racing", "hack-your.webcam", "hack-your.website", "is-a.science", "is-a-bad.site", "is-never.online", "is-no.fun", "mlg-pro.life", "north-korea-will.win", "retarded.men", "small-penis.club"];
+    for(var i in domains){
+      $('#domain').append(`<option value="${domains[i]}">${domains[i]}</option>`)
+    }
+  });
+</script>
+  <header id="main_title"></header>
+<form name="form" id="form" class="topBefore" action="/shorten" method="POST">
+  <input id="url" placeholder="URL to Shorten" type="text" name="url">
+  <select name="domain" id="domain">
+    <option value="" disabled selected hidden>Select a Domain...</option>
+  </select>
+  <input id="submit" type="submit" value="Shorten URL">
+</form>

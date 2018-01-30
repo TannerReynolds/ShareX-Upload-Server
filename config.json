@@ -1,0 +1,27 @@
+{
+  "key": "",
+  "host":"",
+  "save": "",
+  "maxUploadSize": 50,
+  "allowed":[
+    "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
+  ],
+  "admin":{
+    "key": "admin pass key goes here",
+    "save": "",
+    "maxUploadSize": 1024,
+    "allowed": [
+    "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
+     ]
+  },
+  "paste": {
+    "maxUploadSize": 20,
+    "save": "",
+    "allowed": [
+      "js", "php", "html", "txt", "lua", "json", "yml", "go", "cr", "bat", "css", "cs", "java", "py", "less", "c", "cpp", "ini", "pl", "sql", "rb"
+    ]
+  },
+  "discordToken": "Discord Token Here (required if you want API monitoring through Discord)",
+  "discordServerID": "your discord's server ID",
+  "discordChannelID": "the channel you're trying to send api monitor updates to"
+}
