@@ -1,4 +1,4 @@
-# Nodejs ShareX API
+# Nodejs ShareX Server
 
 ## Supported Types Of Uploads
 
