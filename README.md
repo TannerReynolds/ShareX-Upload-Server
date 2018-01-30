@@ -14,7 +14,7 @@
 
 ## Configuration
 
-```json
+```js
 {
   "key": "", <---- password needed for all uploads. Leave blank if you want this to be public
   "host":"",
