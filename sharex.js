@@ -13,16 +13,10 @@ monitorChannel = null;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname+"/uploads/", {
-  extensions: [ "png", "jpg", "gif", "mp4", "mp3", "txt", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv" ],
+  extensions: [ "png", "jpg", "gif", "mp4", "mp3", "txt", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html" ],
 }));
 app.use(express.static(__dirname+"/site_assets/", {
   extensions: [ "png", "jpg", "gif", "mp4", "mp3", "txt", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv" ],
-}));
-app.use(express.static(__dirname+"/shortened_urls/", {
-  extensions: [ "html" ],
-}));
-app.use(express.static(__dirname+"/p/", {
-  extensions: [ "html" ],
 }));
 
 // DISCORD BOT SET MONITOR CHANNEL
@@ -81,7 +75,7 @@ app.post('/shorten', (req, res)=>{
   if(testRegex.test(blackListedNames.toString())){
     res.redirect('/s?error=BLACKLISTED_VALUE_DETECTED'); return res.end();
   }else{
-    var stream = fs.createWriteStream(__dirname+"/shortened_urls/s/"+fileName+".html");
+    var stream = fs.createWriteStream(__dirname+"/uploads/s/"+fileName+".html");
     stream.once('open', function (fd) {
       stream.write(`<meta http-equiv="refresh" content="0;URL='${req.body.url}'" />`);
       stream.end();
@@ -111,7 +105,7 @@ app.post('/api/shortener', (req, res)=>{
   if(testRegex.test(blackListedNames.toString())){
     res.send('BLACKLISTED_VALUE_DETECTED'); return res.end();
   }else{
-    var stream = fs.createWriteStream(__dirname+"/shortened_urls/s/"+fileName+".html");
+    var stream = fs.createWriteStream(__dirname+"/uploads/s/"+fileName+".html");
     stream.once('open', function (fd) {
       stream.write(`<meta http-equiv="refresh" content="0;URL='${req.body.url}'" />`);
       stream.end();
@@ -130,7 +124,7 @@ app.post('/api/paste', (req, res)=>{
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     var oldpath = files.fdata.path;
-    var newpath = "./p/"+fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, '').toString();
+    var newpath = "./uploads/p/"+fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, '').toString();
     if(!$con.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf('.')+1, files.fdata.name.length))){
       res.write("http://"+req.headers.host+"/"+"ERR_ILLEGAL_FILE_TYPE"); return res.end();
     } else {
@@ -144,7 +138,7 @@ app.post('/api/paste', (req, res)=>{
             case "txt": return paste("language-none");
             case "lua": return paste("language-lua");
             case "php": return paste("language-php");
-            case "html": return paste("language-html");
+            case "html": return paste("language-xml");
             case "json": return paste("language-json");
             case "yml": return paste("language-yaml");
             case "go": return paste("language-go");
@@ -164,7 +158,7 @@ app.post('/api/paste', (req, res)=>{
           }
           function paste(fileType) {
             fs.readFile(newpath, function read(err, data) {
-            var stream = fs.createWriteStream(__dirname+"/p/"+fileName+".html");
+            var stream = fs.createWriteStream(__dirname+"/uploads/p/"+fileName+".html");
             stream.once('open', function (fd) {
               stream.write(`
 <!DOCTYPE html>
@@ -180,7 +174,7 @@ app.post('/api/paste', (req, res)=>{
               `);
               stream.end();
               fs.unlink(newpath);
-              res.write("http://"+req.headers.host+"/"+fileName);
+              res.write("http://"+req.headers.host+"/p/"+fileName);
               return res.end();
             });
           });
