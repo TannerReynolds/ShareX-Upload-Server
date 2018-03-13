@@ -45,7 +45,3 @@
   "discordChannelID": "2222222222222" <----- channel the API will use to monitor (will send user IP addresses to this channel, along with what they uploaded, filezise, type of user (user/admin), and a link to their upload. For shortened URLS, it will show the URL they shortened)
 }
 ```
-
-## Additional Customization
-
-- ### `/api/paste` uses prism.js & css for syntax highlighting, this can be customized @ `http://prismjs.com/`

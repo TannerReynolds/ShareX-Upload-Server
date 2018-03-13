@@ -57,7 +57,6 @@ app.get('*', function(req, res){
 
 // POST REQUESTS
 ////////////////////////////////////////////
-let blackListedNames = [];
 // URL SHORTENER
 app.post('/shorten', (req, res)=>{
   var fileName = randomToken(6);
@@ -69,19 +68,14 @@ app.post('/shorten', (req, res)=>{
   if(!/([-a-zA-Z0-9^\p{L}\p{C}\u00a1-\uffff@:%_\+.~#?&//=]{2,256}){1}(\.[a-z]{2,4}){1}(\:[0-9]*)?(\/[-a-zA-Z0-9\u00a1-\uffff\(\)@:%,_\+.~#?&//=]*)?([-a-zA-Z0-9\(\)@:%,_\+.~#?&//=]*)?/.test(req.body.url.toLowerCase().toString())){
     res.redirect('/s?error=NOT_A_VALID_URL'); return res.end();
   }
-  var testRegex = new RegExp(req.body.url.toString().toLowerCase(), "g");
-  if(testRegex.test(blackListedNames.toString())){
-    res.redirect('/s?error=BLACKLISTED_VALUE_DETECTED'); return res.end();
-  }else{
-    var stream = fs.createWriteStream(__dirname+"/uploads/s/"+fileName+".html");
-    stream.once('open', function (fd) {
-      stream.write(`<meta http-equiv="refresh" content="0;URL='${req.body.url}'" />`);
-      stream.end();
-      monitorChannel.send("```MARKDOWN\n[NEW][SHORT URL]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/s/"+fileName+")\n[IP]("+userIP+")\n```");
-      res.redirect('/s?success=http://'+req.headers.host+"/s/"+fileName);
-      return res.end();
-    });
-  }
+  var stream = fs.createWriteStream(__dirname+"/uploads/s/"+fileName+".html");
+  stream.once('open', function (fd) {
+    stream.write(`<meta http-equiv="refresh" content="0;URL='${req.body.url}'" />`);
+    stream.end();
+    monitorChannel.send("```MARKDOWN\n[NEW][SHORT URL]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/s/"+fileName+")\n[IP]("+userIP+")\n```");
+    res.redirect('/s?success=http://'+req.headers.host+"/s/"+fileName);
+    return res.end();
+  });
 });
 
 
@@ -114,97 +108,46 @@ app.post('/api/shortener', (req, res)=>{
 
 app.post('/api/paste', (req, res) => {
   res.setHeader('Content-Type', 'text/text');
-  var fileName = randomToken(6);
+  var file_name = randomToken(7);
   var form = new formidable.IncomingForm();
-  var userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-  form.parse(req, function(err, fields, files) {
-      var oldpath = files.fdata.path;
-      var newpath = "./uploads/p/" + fileName + files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, '').toString();
-      if (!$con.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf('.') + 1, files.fdata.name.length))) {
-          res.write("http://" + req.headers.host + "/" + "ERR_ILLEGAL_FILE_TYPE");
-          return res.end();
-      } else {
-          if (Math.round((files.fdata.size / 1024) / 1000) > $con.paste.maxUploadSize) {
-              monitorChannel.send("```MARKDOWN\n[FAILED PASTE][USER]\n[FILE](" + files.fdata.name + ")\n[SIZE](" + Math.round(files.fdata.size / 1024) + "KB)\n[TYPE](" + files.fdata.type + ")\n[IP](" + userIP + ")\n\n[ERROR](ERR_FILE_TOO_BIG)```");
-              res.write("http://" + req.headers.host + "/" + "ERR_FILE_TOO_BIG");
-              return res.end();
-          } else {
-              fs.rename(oldpath, newpath, function(err) {
-                  switch (files.fdata.name.substring(files.fdata.name.lastIndexOf('.') + 1, files.fdata.name.length)) {
-                      case "js":
-                          return paste("language-js");
-                      case "txt":
-                          return paste("language-none");
-                      case "lua":
-                          return paste("language-lua");
-                      case "php":
-                          return paste("language-php");
-                      case "html":
-                          return paste("language-xml");
-                      case "json":
-                          return paste("language-json");
-                      case "yml":
-                          return paste("language-yaml");
-                      case "go":
-                          return paste("language-go");
-                      case "cr":
-                          return paste("language-crystal");
-                      case "bat":
-                          return paste("language-batch");
-                      case "css":
-                          return paste("language-css");
-                      case "cs":
-                          return paste("language-csharp");
-                      case "java":
-                          return paste("language-java");
-                      case "py":
-                          return paste("language-python");
-                      case "less":
-                          return paste("language-less");
-                      case "c":
-                          return paste("language-c");
-                      case "cpp":
-                          return paste("language-cpp");
-                      case "ini":
-                          return paste("language-ini");
-                      case "pl":
-                          return paste("language-perl");
-                      case "sql":
-                          return paste("language-sql");
-                      case "rb":
-                          return paste("language-ruby");
-                  }
-
-                  function paste(fileType) {
-                      fs.readFile(newpath, 'utf8', function(err, data) {
-                          var stream = fs.createWriteStream(__dirname + "/uploads/p/" + fileName + ".html");
-                          stream.once('open', function(fd) {
-                              let newData = data.replace("xmp>", " xmp>");
-                              fs.writeFile(newpath, newData, 'utf8', function(err) {
-                                  stream.write(`
+  form.parse(req, function (err, fields, files) {
+    var oldpath = files.fdata.path;
+    var newpath = "./code/"+file_name+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, '').toString();
+    if(!$con.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf('.')+1, files.fdata.name.length))){
+      res.write("http://"+req.headers.host+"/"+"ERR_ILLEGAL_FILE_TYPE"); return res.end();
+    } else {
+    if(Math.round((files.fdata.size/1024)/1000) > $con.paste.max_upload_size){
+        monitor_channel_2.send("```MARKDOWN\n[FAILED PASTE][USER]\n[FILE]("+files.fdata.name+")\n[SIZE]("+Math.round(files.fdata.size/1024)+"KB)\n[TYPE]("+files.fdata.type+")\n[IP]("+user_ip+")\n\n[ERROR](ERR_FILE_TOO_BIG)```");
+          res.write("http://"+req.headers.host+"/"+"ERR_FILE_TOO_BIG"); return res.end();
+      }else{
+          fs.rename(oldpath, newpath, function (err) {
+            fs.readFile(newpath, 'utf-8', function read(err, data) {
+            var stream = fs.createWriteStream(__dirname+"/p/"+file_name+".html");
+            stream.once('open', function (fd) {
+              let lt = data.replace(/>/g, "&gt;");
+              let replaced = lt.replace(/</g, "&lt;");
+              stream.write(`
 <!DOCTYPE html>
 <html>
 <head>
-<link href="prism.css" rel="stylesheet" />
+<meta name="theme-color" content="#DC603A">
+<link rel="stylesheet" href="atom-one-dark.css">
+<script src="highlight.pack.js"></script>
 </head>
 <body>
-<pre class="line-numbers"><code class="${fileType}"><xmp>${newData}</xmp></code></pre>
-<script src="prism.js"></script>
+<pre><code id="code">${replaced}</code></pre>
+<script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>
-            `);
-                                  stream.end();
-                                  fs.unlink(newpath);
-                                  res.write("http://" + req.headers.host + "/p/" + fileName);
-                                  monitorChannel.send("```MARKDOWN\n[NEW PASTE][USER]\n[FILE](" + files.fdata.name + ")\n[SIZE](" + Math.round(files.fdata.size / 1024) + "KB)\n[TYPE](" + files.fdata.type + ")\n[IP](" + userIP + ")\n```" + "http://" + req.headers.host + "/p/" + fileName);
-                                  return res.end();
-                              });
-                          });
-                      });
-                  }
-              });
-          };
-      };
+              `);
+              stream.end();
+              res.write("http://"+req.headers.host+"/"+file_name);
+              return res.end();
+            });
+          });
+      });
+    };
+    }; 
   });
 });
 
