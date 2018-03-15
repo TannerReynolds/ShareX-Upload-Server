@@ -45,3 +45,6 @@
   "discordChannelID": "2222222222222" <----- channel the API will use to monitor (will send user IP addresses to this channel, along with what they uploaded, filezise, type of user (user/admin), and a link to their upload. For shortened URLS, it will show the URL they shortened)
 }
 ```
+## Additional Customization
+- ### You can place an index.html file in `/pages/`, but it's not required
+- ### You can use different css stylesheets for the `/api/paste` endpoint. You can find them here: `https://highlightjs.org/`
