@@ -27,6 +27,19 @@ if($con.discordToken && $con.discordToken !== undefined && $con.discrdToken !== 
   });
 }
 
+// INDEX
+app.get('/', (req, res)=>{
+  if (fs.existsSync(__dirname+"/pages/index.html")) {
+    res.setHeader('Content-Type', 'text/html');
+    res.write(fs.readFileSync(__dirname+"/pages/index.html"));
+    res.end();
+  } else {
+    res.setHeader('Content-Type', 'text/html');
+    res.write(fs.readFileSync(__dirname+"/pages/404.html"));
+    res.end();
+  }
+});
+
 // ERROR HANDLE EXPLANATION
 app.get('/ERR_FILE_TOO_BIG', (req, res)=>{
   res.setHeader('Content-Type', 'text/html');
