@@ -63,8 +63,9 @@ app.post('/api/shortener', (req, res)=>{
     stream.once('open', fd => {
       stream.write(`<meta http-equiv="refresh" content="0;URL='${req.body.url}'" />`);
       stream.end();
-      if(monitorChannel !== null) monitorChannel.send("```MARKDOWN\n[NEW][SHORT URL]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/s/"+fileName+")\n[IP]("+userIP+")\n```");
-      res.send({ url: `http://${req.headers.host}/s/${fileName}`, file: fileName});
+      if(monitorChannel !== null) monitorChannel.send("```MARKDOWN\n[NEW][SHORT URL]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/"+fileName+")\n[IP]("+userIP+")\n```");
+      console.log("[NEW][SHORT URL]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/"+fileName+")\n[IP]("+userIP+")")
+      res.send({ url: `http://${req.headers.host}/${fileName}`, file: fileName});
       return res.end();
     });
   }
@@ -73,11 +74,11 @@ app.post('/api/shortener', (req, res)=>{
 
 app.post('/api/paste', (req, res) => {
   res.setHeader('Content-Type', 'text/text');
-  var file_name = randomToken(7);
+  var fileName = randomToken(6);
   var form = new formidable.IncomingForm();
   form.parse(req, (err, fields, files) => {
     var oldpath = files.fdata.path;
-    var newpath = "./code/"+file_name+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, '').toString();
+    var newpath = "./code/"+fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, '').toString();
     if(!$con.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf('.')+1, files.fdata.name.length))){
       res.write("http://"+req.headers.host+"/"+"ERR_ILLEGAL_FILE_TYPE"); return res.end();
     } else {
@@ -87,7 +88,7 @@ app.post('/api/paste', (req, res) => {
     } else{
       fs.rename(oldpath, newpath, err => {
         fs.readFile(newpath, 'utf-8', function read(err, data) {
-          var stream = fs.createWriteStream(__dirname+"/p/"+file_name+".html");
+          var stream = fs.createWriteStream(__dirname+"/p/"+fileName+".html");
           stream.once('open', fd => {
             let cleaned = data.replace(/>/g, "&gt;");
             cleaned = cleaned.replace(/</g, "&lt;");
@@ -105,7 +106,9 @@ app.post('/api/paste', (req, res) => {
             </body>
             </html>`);
             stream.end();
-            res.write("http://"+req.headers.host+"/"+file_name);
+            res.write("http://"+req.headers.host+"/"+fileName);
+            if(monitorChannel !== null) monitorChannel.send("```MARKDOWN\n[NEW][PASTE]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/"+fileName+")\n[IP]("+userIP+")\n```");
+            console.log("[NEW][PASTE]\n[URL]("+req.body.url+")\n[NEW]("+req.headers.host+"/"+fileName+")\n[IP]("+userIP+")")
             return res.end();
           });
         });
