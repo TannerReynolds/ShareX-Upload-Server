@@ -98,44 +98,43 @@ app.post("/api/paste", (req, res) => {
       res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`) 
       return res.end()
     } else {
-    if(Math.round((files.fdata.size/1024)/1000) > c.paste.max_upload_size) {
-      if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[FAILED PASTE][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${user_ip})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
-      res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
-      return res.end()
-    } else {
-      fs.rename(oldpath, newpath, err => {
-        fs.readFile(newpath, "utf-8", function read(err, data) {
-          let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
-          stream.once("open", fd => {
-            let cleaned = data.replace(/>/g, "&gt")
-            cleaned = cleaned.replace(/</g, "&lt")
-            stream.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <meta name="theme-color" content="#DC603A">
-            <link rel="stylesheet" href="atom-one-dark.css">
-            <script src="highlight.pack.js"></script>
-            </head>
-            <body>
-            <pre><code id="code">${replaced}</code></pre>
-            <script>hljs.initHighlightingOnLoad()</script>
-            </body>
-            </html>`)
-            stream.end()
-            fs.unlink(newpath, err => {
-              if(err) return console.log(err)
-            });
-            res.write(`http://${req.headers.host}/${fileName}`)
-            if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
-            console.log(`[NEW][PASTE]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})`)
-            return res.end()
+      if(Math.round((files.fdata.size/1024)/1000) > c.paste.max_upload_size) {
+        if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[FAILED PASTE][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${user_ip})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+        res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
+        return res.end()
+      } else {
+        fs.rename(oldpath, newpath, err => {
+          fs.readFile(newpath, "utf-8", function read(err, data) {
+            let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
+            stream.once("open", fd => {
+              let cleaned = data.replace(/>/g, "&gt")
+              cleaned = cleaned.replace(/</g, "&lt")
+              stream.write(`
+              <!DOCTYPE html>
+              <html>
+              <head>
+              <meta name="theme-color" content="#DC603A">
+              <link rel="stylesheet" href="atom-one-dark.css">
+              <script src="highlight.pack.js"></script>
+              </head>
+              <body>
+              <pre><code id="code">${replaced}</code></pre>
+              <script>hljs.initHighlightingOnLoad()</script>
+              </body>
+              </html>`)
+              stream.end()
+              fs.unlink(newpath, err => {
+                if(err) return console.log(err)
+              });
+              res.write(`http://${req.headers.host}/${fileName}`)
+              if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+              return res.end()
+            })
           })
         })
-      })
+      }
     }
-  }
-})
+  })
 })
 
 

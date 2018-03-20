@@ -1,13 +1,12 @@
 {
   "name": "sharexapi",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "ShareX API made in Nodejs. Includes images, videos, code, text, and url shortening",
   "dependencies": {
     "body-parser": "^1.18.2",
     "discord.js": "^11.3.0",
     "express": "^4.16.2",
     "formidable": "^1.1.1",
-    "path": "^0.12.7",
-    "random-token": "0.0.8"
+    "path": "^0.12.7"
   }
 }
