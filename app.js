@@ -21,7 +21,7 @@ app.use(express.static("./pages/", {
 // DISCORD BOT SET MONITOR CHANNEL
 let monitorChannel = null
 if(c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
-  client.on("ready", ()=> {
+  client.on("ready", () => {
     console.log("Discord API monitor successfully logged in")
     monitorChannel = client.guilds.get(c.discordServerID).channels.get(c.discordChannelID)
   })
