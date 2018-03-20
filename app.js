@@ -12,7 +12,7 @@ const c = require("./config.json")
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static("./uploads/", {
-  extensions: [ "png", "jpg", "gif", "mp4", "mp3", "txt", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html" ],
+  extensions: c.admin.allowed
 }))
 app.use(express.static("./pages/", {
   extensions: [ "html", "css" ],
