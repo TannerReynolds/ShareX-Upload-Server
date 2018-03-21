@@ -22,6 +22,7 @@
     ]
   },
   "discordToken": "Discord Token Here (required if you want API monitoring through Discord)",
-  "discordServerID": "your discord's server ID",
-  "discordChannelID": "the channel you're trying to send api monitor updates to"
+  "discordAdminIDs": ["discord IDs of people who can run commands go here", "Like this"],
+  "discordChannelID": "the channel you're trying to send api monitor updates to",
+  "prefix": "enter prefix for bot commands here"
 }

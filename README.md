@@ -18,31 +18,32 @@
 
 ```js
 {
-  "key": "", <---- password needed for all uploads. Leave blank if you want this to be public
+  "key": "", // password needed for all uploads. Leave blank if you want this to be public
   "host":"",
   "save": "",
-  "maxUploadSize": 50, <---- Size in MB
-  "allowed":[ <------- supported filetypes
+  "maxUploadSize": 50, // Size in MB
+  "allowed":[ // supported filetypes
     "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
   ],
   "admin":{
-    "key": "password1234", <----- "Admin" password used for higher upload sizes/more supported file types 
+    "key": "password1234", // "Admin" password used for higher upload sizes/more supported file types 
     "save": "",
-    "maxUploadSize": 1024, <---- Size in MB
-    "allowed": [ <------- supported filetypes
+    "maxUploadSize": 1024, // Size in MB
+    "allowed": [ // supported filetypes
     "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
      ]
   },
   "paste": {
-    "maxUploadSize": 20, <---- Size in MB
+    "maxUploadSize": 20, // Size in MB
     "save": "",
-    "allowed": [ <------- supported filetypes (all gets converted to an html document)
+    "allowed": [ // supported filetypes (all gets converted to an html document)
       "js", "php", "html", "txt", "lua", "json", "yml", "go", "cr", "bat", "css", "cs", "java", "py", "less", "c", "cpp", "ini", "pl", "sql", "rb"
     ]
   },
-  "discordToken": "thisismydiscordapitoken", <------ Leave blank if you dont want to monitor uploads/shortened urls through Discord (https://discordapp.com/developers)
-  "discordServerID": "111111111111", <---- guild ID that the discordChannelID is in
-  "discordChannelID": "2222222222222" <----- channel the API will use to monitor (will send user IP addresses to this channel, along with what they uploaded, filezise, type of user (user/admin), and a link to their upload. For shortened URLS, it will show the URL they shortened)
+  "discordToken": "thisismydiscordapitoken", // Leave blank if you dont want to monitor uploads/shortened urls through Discord (https://discordapp.com/developers)
+  "discordAdminIDs": ["discord IDs of people who can run commands go here", "Like this"], // IDs of people who are able to run commands with the bot
+  "discordChannelID": "2222222222222" // channel the API will use to monitor (will send user IP addresses to this channel, along with what they uploaded, filezise, type of user (user/admin), and a link to their upload. For shortened URLS, it will show the URL they shortened)
+  "prefix": "enter prefix for bot commands here" // prefix the bot will use
 }
 ```
 ## Additional Customization

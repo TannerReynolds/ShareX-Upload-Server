@@ -4,8 +4,8 @@ const app = express()
 const bodyParser = require("body-parser")
 const path = require("path")
 const formidable = require("formidable")
-const Discord = require("discord.js")
-const client = new Discord.Client()
+const Eris = require("eris")
+const bot = new Eris(c.discordToken, { maxShards: "auto" })
 const c = require("./config.json")
 
 // APP SETTINGS
@@ -18,13 +18,40 @@ app.use(express.static("./pages/", {
   extensions: [ "html", "css" ],
 }))
 
-// DISCORD BOT SET MONITOR CHANNEL
+// DISCORD BOT SETUP
+
+let commands = [];
+fs.readdir("./commands/", (err, files) => {
+  files.forEach(file => {
+    if(file.toString().indexOf("_") != 0 && file.toString().includes(".js")){
+      commands.push(require(`./commands/${file.toString()}`))
+      console.log(`Loaded Command: ${file.toString()}`)
+    }
+  })
+})
+
 let monitorChannel = null
 if(c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
-  client.on("ready", () => {
+  console.log("Connecting to Discord...")
+  let prefix = c.prefix
+  bot.on("ready", () => {
     console.log("Discord API monitor successfully logged in")
-    monitorChannel = client.guilds.get(c.discordServerID).channels.get(c.discordChannelID)
+    monitorChannel = c.discordChannelID
   })
+  bot.on("messageCreate", async msg => {
+    if(!c.discordAdminIDs.includes(msg.author.id)) return
+    if(msg.content.indexOf(prefix) !== 0) return
+    const args = msg.content.slice(prefix.length).trim().split(/ +/g)
+    const command = args.shift().toString().toLowerCase()
+    for(i=0;commands.length>i;i++) {
+      if(commands[i].command == command) {
+        await commands[i].execute(bot, msg, args, commands, prefix)
+        break
+      }
+    }
+  })
+} else {
+  console.log("No Discord Token provided...\nContinuing without Discord connection...")
 }
 
 // INDEX
@@ -78,7 +105,7 @@ app.post("/api/shortener", (req, res) => {
     stream.once("open", fd => {
       stream.write(`<meta http-equiv="refresh" content="0URL="${req.body.url}"" />`)
       stream.end()
-      if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+      if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
       console.log(`[NEW][SHORT URL]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})`)
       res.send({ url: `http://${req.headers.host}/${fileName}`, file: fileName})
       return res.end()
@@ -99,7 +126,7 @@ app.post("/api/paste", (req, res) => {
       return res.end()
     } else {
       if(Math.round((files.fdata.size/1024)/1000) > c.paste.max_upload_size) {
-        if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[FAILED PASTE][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${user_ip})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+        if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED PASTE][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${user_ip})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
         res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
         return res.end()
       } else {
@@ -127,7 +154,7 @@ app.post("/api/paste", (req, res) => {
                 if(err) return console.log(err)
               });
               res.write(`http://${req.headers.host}/${fileName}`)
-              if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+              if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
               return res.end()
             })
           })
@@ -149,12 +176,12 @@ app.post("/api/sharex", (req, res) => {
     let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
     if(fields.key === c.admin.key) {
       if(Math.round((files.fdata.size/1024)/1000) > c.admin.maxUploadSize) {
-        if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+        if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
           res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
           return res.end()
       } else {
         fs.rename(oldpath, newpath, err => {
-          if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${fileName}`)
+          if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${fileName}`)
           if(err) return res.write(err)
           res.write(`http://${req.headers.host}/${fileName}`)
           return res.end()
@@ -162,17 +189,17 @@ app.post("/api/sharex", (req, res) => {
       }
     } else {
       if(Math.round((files.fdata.size/1024)/1000) > c.maxUploadSize) {
-        if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+        if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
           res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
           return res.end()
       } else {
         if(!c.allowed.includes(files.fdata.type.toString().toLowerCase().replace(/[A-Za-z]+(\/)+/g,""))) {
-          if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
+          if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
             res.write(`http://${req.headers.host}/${ERR_ILLEGAL_FILE_TYPE}`) 
             return res.end()
         } else {
           fs.rename(oldpath, newpath, err => {
-            if(monitorChannel !== null) monitorChannel.send(`\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}\``)
+            if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}\``)
             if(err) return res.write(err)
             res.write(`http://${req.headers.host}/${fileName}`)
             return res.end()
@@ -186,7 +213,7 @@ app.post("/api/sharex", (req, res) => {
 app.listen(80, () => {
   console.log("API listening on port 80")
   if(c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
-    client.login(c.discordToken)
+    bot.connect()
   }
 })
 async function randomToken(number) {
