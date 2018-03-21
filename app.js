@@ -18,20 +18,18 @@ app.use(express.static("./pages/", {
 }))
 
 // DISCORD BOT SETUP
-
-let commands = [];
-fs.readdir("./commands/", (err, files) => {
-  files.forEach(file => {
-    if(file.toString().indexOf("_") != 0 && file.toString().includes(".js")){
-      commands.push(require(`./commands/${file.toString()}`))
-      console.log(`Loaded Command: ${file.toString()}`)
-    }
-  })
-})
-
 let monitorChannel = null
 if(c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
   console.log("Connecting to Discord...")
+  let commands = [];
+  fs.readdir("./commands/", (err, files) => {
+    files.forEach(file => {
+      if(file.toString().indexOf("_") != 0 && file.toString().includes(".js")){
+        commands.push(require(`./commands/${file.toString()}`))
+        console.log(`Loaded Command: ${file.toString()}`)
+      }
+    })
+  })
   let prefix = c.prefix
   bot.on("ready", () => {
     console.log("Discord API monitor successfully logged in")
@@ -115,6 +113,7 @@ app.post("/api/shortener", (req, res) => {
 
 // PASTE ENDPOINT
 app.post("/api/paste", (req, res) => {
+  let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
   res.setHeader("Content-Type", "text/text")
   let fileName = randomToken(6)
   let form = new formidable.IncomingForm()
@@ -141,12 +140,17 @@ app.post("/api/paste", (req, res) => {
               <html>
               <head>
               <meta name="theme-color" content="#DC603A">
+              <meta property="og:title" content="HPaste">
+              <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
               <link rel="stylesheet" href="atom-one-dark.css">
+              <link rel="stylesheet" href="paste.css">
               <script src="highlight.pack.js"></script>
+              <script src="highlightjs-line-numbers.min.js"></script>
               </head>
               <body>
-              <pre><code id="code">${replaced}</code></pre>
+              <pre><code id="code">${data}</code></pre>
               <script>hljs.initHighlightingOnLoad()</script>
+              <script>hljs.initLineNumbersOnLoad();</script>
               </body>
               </html>`)
               stream.end()
@@ -154,7 +158,7 @@ app.post("/api/paste", (req, res) => {
                 if(err) return console.log(err)
               });
               res.write(`http://${req.headers.host}/${fileName}`)
-              if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${data})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+              if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW PASTE]\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}`)
               return res.end()
             })
           })
@@ -199,7 +203,7 @@ app.post("/api/sharex", (req, res) => {
             return res.end()
         } else {
           fs.rename(oldpath, newpath, err => {
-            if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}\``)
+            if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}`)
             if(err) return res.write(err)
             res.write(`http://${req.headers.host}/${fileName}`)
             return res.end()
@@ -216,7 +220,7 @@ app.listen(80, () => {
     bot.connect()
   }
 })
-async function randomToken(number) {
+function randomToken(number) {
   number = parseInt(number)
   let text = ""
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
