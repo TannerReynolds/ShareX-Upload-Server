@@ -9,8 +9,7 @@ const Eris = require("eris")
 const bot = new Eris(c.discordToken, { maxShards: "auto" })
 
 // APP SETTINGS
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.text())
 app.use(express.static("./uploads/", {
   extensions: c.admin.allowed
 }))
@@ -92,22 +91,23 @@ app.get("*", (req, res) => {
 app.post("/api/shortener", (req, res) => {
   let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
   let fileName = randomToken(6)
+  let data = req.body
   res.setHeader("Content-Type", "text/text")
-  if(req.body.url == undefined || req.body.url == "" || req.body.url == null) {
+  if(data == undefined || data == "" || data == null) {
     res.send("NO_URL_PROVIDED") 
     return res.end()
   }
-  if(!/([-a-zA-Z0-9^\p{L}\p{C}\u00a1-\uffff@:%_\+.~#?&//=]{2,256}){1}(\.[a-z]{2,4}){1}(\:[0-9]*)?(\/[-a-zA-Z0-9\u00a1-\uffff\(\)@:%,_\+.~#?&//=]*)?([-a-zA-Z0-9\(\)@:%,_\+.~#?&//=]*)?/.test(req.body.url.toLowerCase().toString())) {
+  if(!/([-a-zA-Z0-9^\p{L}\p{C}\u00a1-\uffff@:%_\+.~#?&//=]{2,256}){1}(\.[a-z]{2,4}){1}(\:[0-9]*)?(\/[-a-zA-Z0-9\u00a1-\uffff\(\)@:%,_\+.~#?&//=]*)?([-a-zA-Z0-9\(\)@:%,_\+.~#?&//=]*)?/.test(data.toLowerCase().toString())) {
     res.send("NOT_A_VALID_URL") 
     return res.end()
   } else {
     let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
     stream.once("open", fd => {
-      stream.write(`<meta http-equiv="refresh" content="0URL="${req.body.url}"" />`)
+      stream.write(`<meta http-equiv="refresh" content="0URL="${data}"" />`)
       stream.end()
-      if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
-      console.log(`[NEW][SHORT URL]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})`)
-      res.send({ url: `http://${req.headers.host}/${fileName}`, file: fileName})
+      if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${data})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+      console.log(`[NEW][SHORT URL]\n[URL](${data})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})`)
+      res.write(`http://${req.headers.host}/${fileName}`)
       return res.end()
     })
   }
@@ -154,7 +154,7 @@ app.post("/api/paste", (req, res) => {
                 if(err) return console.log(err)
               });
               res.write(`http://${req.headers.host}/${fileName}`)
-              if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${req.body.url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+              if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][PASTE]\n[URL](${data})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
               return res.end()
             })
           })
