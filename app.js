@@ -4,9 +4,9 @@ const app = express()
 const bodyParser = require("body-parser")
 const path = require("path")
 const formidable = require("formidable")
+const c = require("./config.json")
 const Eris = require("eris")
 const bot = new Eris(c.discordToken, { maxShards: "auto" })
-const c = require("./config.json")
 
 // APP SETTINGS
 app.use(bodyParser.json())
