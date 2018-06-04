@@ -232,3 +232,6 @@ function randomToken(number) {
   }
   return text
 }
+
+process.on('unhandledRejection', reason => console.log(reason));
+process.on('uncaughtException', err => console.log(err));
