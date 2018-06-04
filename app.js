@@ -220,6 +220,9 @@ app.listen(80, () => {
     bot.connect()
   }
 })
+app.listen(443, () => {
+  console.log("API listening on port 443")
+})
 function randomToken(number) {
   number = parseInt(number)
   let text = ""
