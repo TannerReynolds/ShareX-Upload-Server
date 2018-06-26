@@ -134,7 +134,7 @@ app.post("/api/paste", (req, res) => {
       return console.log(`Unauthorized User | File Upload | ${userIP}`)
     }
     let oldpath = files.fdata.path
-    let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, "").toString()}`;
+    let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z0-9]+)+/g, "").toString()}`;
     if(!c.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length))) {
       res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`) 
       return res.end()
@@ -196,7 +196,7 @@ app.post("/api/files", (req, res) => {
       return console.log(`Unauthorized User | File Upload | ${userIP}`)
     }
     let oldpath = files.fdata.path
-    let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, "").toString()}`
+    let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z0-9]+)+/g, "").toString()}`
     if(fields.key === c.admin.key) {
       if(Math.round((files.fdata.size/1024)/1000) > c.admin.maxUploadSize) {
         if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
