@@ -7,6 +7,12 @@ const formidable = require("formidable")
 const c = require("./config.json")
 const Eris = require("eris")
 const bot = new Eris(c.discordToken, { maxShards: "auto" })
+const Remarkable = require("remarkable")
+const md = new Remarkable("full", {
+  html: true,
+  linkify: true,
+  typographer: true
+})
 
 // APP SETTINGS
 app.use(bodyParser.text())
@@ -83,41 +89,50 @@ app.get("*", (req, res) => {
   res.end()
 })
 
-// POST REQUESTS
-////////////////////////////////////////////
 // URL SHORTENER
 app.post("/api/shortener", (req, res) => {
-  let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
-  let fileName = randomToken(6)
-  let data = req.body
-  res.setHeader("Content-Type", "text/text")
-  if(data == undefined || data == "" || data == null) {
-    res.send("NO_URL_PROVIDED") 
-    return res.end()
-  }
-  if(!/([-a-zA-Z0-9^\p{L}\p{C}\u00a1-\uffff@:%_\+.~#?&//=]{2,256}){1}(\.[a-z]{2,4}){1}(\:[0-9]*)?(\/[-a-zA-Z0-9\u00a1-\uffff\(\)@:%,_\+.~#?&//=]*)?([-a-zA-Z0-9\(\)@:%,_\+.~#?&//=]*)?/.test(data.toLowerCase().toString())) {
-    res.send("NOT_A_VALID_URL") 
-    return res.end()
-  } else {
-    let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
-    stream.once("open", fd => {
-      stream.write(`<meta http-equiv="refresh" content="0URL="${data}"" />`)
-      stream.end()
-      if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${data})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
-      console.log(`[NEW][SHORT URL]\n[URL](${data})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})`)
-      res.write(`http://${req.headers.host}/${fileName}`)
+  let form = new formidable.IncomingForm()
+  form.parse(req, (err, fields, files) => {
+    let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
+    if(!auth(req, res, c.key, fields.key, userIP)) {
+      res.write("Unauthorized"); 
+      res.end(); 
+      return console.log(`Unauthorized User | File Upload | ${userIP}`)
+    }
+    let fileName = randomToken(4) // 14,776,336 possible file names
+    let url = req.headers.url
+    if(url == undefined || url == "" || url == null) {
+      res.send("NO_URL_PROVIDED") 
       return res.end()
-    })
-  }
+    }
+    if(!/([-a-zA-Z0-9^\p{L}\p{C}\u00a1-\uffff@:%_\+.~#?&//=]{2,256}){1}(\.[a-z]{2,4}){1}(\:[0-9]*)?(\/[-a-zA-Z0-9\u00a1-\uffff\(\)@:%,_\+.~#?&//=]*)?([-a-zA-Z0-9\(\)@:%,_\+.~#?&//=]*)?/.test(url.toLowerCase().toString())) {
+      res.send("NOT_A_VALID_URL") 
+      return res.end()
+    } else {
+      let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
+      stream.once("open", fd => {
+        stream.write(`<meta http-equiv="refresh" content="0; url=${url}" />`)
+        stream.end()
+        if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+        res.write(`http://${req.headers.host}/${fileName}`)
+        return res.end()
+      })
+    }
+  })
 })
 
 // PASTE ENDPOINT
 app.post("/api/paste", (req, res) => {
-  let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
   res.setHeader("Content-Type", "text/text")
-  let fileName = randomToken(6)
+  let fileName = randomToken(5) // 916,132,832 possible file names
   let form = new formidable.IncomingForm()
   form.parse(req, (err, fields, files) => {
+    let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
+    if(!auth(req, res, c.key, fields.key, userIP)) {
+      res.write("Unauthorized"); 
+      res.end(); 
+      return console.log(`Unauthorized User | File Upload | ${userIP}`)
+    }
     let oldpath = files.fdata.path
     let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, "").toString()}`;
     if(!c.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length))) {
@@ -136,23 +151,23 @@ app.post("/api/paste", (req, res) => {
               let cleaned = data.replace(/>/g, "&gt")
               cleaned = cleaned.replace(/</g, "&lt")
               stream.write(`
-              <!DOCTYPE html>
-              <html>
-              <head>
-              <meta name="theme-color" content="#DC603A">
-              <meta property="og:title" content="HPaste">
-              <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
-              <link rel="stylesheet" href="atom-one-dark.css">
-              <link rel="stylesheet" href="paste.css">
-              <script src="highlight.pack.js"></script>
-              <script src="highlightjs-line-numbers.min.js"></script>
-              </head>
-              <body>
-              <pre><code id="code">${data}</code></pre>
-              <script>hljs.initHighlightingOnLoad()</script>
-              <script>hljs.initLineNumbersOnLoad();</script>
-              </body>
-              </html>`)
+                <!DOCTYPE html>
+                <html>
+                <head>
+                <meta name="theme-color" content="#DC603A">
+                <meta property="og:title" content="HPaste">
+                <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
+                <link rel="stylesheet" href="atom-one-dark.css">
+                <link rel="stylesheet" href="paste.css">
+                <script src="highlight.pack.js"></script>
+                <script src="highlightjs-line-numbers.min.js"></script>
+                </head>
+                <body>
+                <pre><code id="code">${data}</code></pre>
+                <script>hljs.initHighlightingOnLoad()</script>
+                <script>hljs.initLineNumbersOnLoad();</script>
+                </body>
+                </html>`)
               stream.end()
               fs.unlink(newpath, err => {
                 if(err) return console.log(err)
@@ -168,16 +183,20 @@ app.post("/api/paste", (req, res) => {
   })
 })
 
-
-// IMAGE UPLOADER
-app.post("/api/sharex", (req, res) => {
+// FILE UPLOADER
+app.post("/api/files", (req, res) => {
   res.setHeader("Content-Type", "text/text")
-  let fileName = randomToken(6)
+  let fileName = randomToken(6) // 56,800,235,584 possible file names
   let form = new formidable.IncomingForm()
   form.parse(req, (err, fields, files) => {
+    let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
+    if(!auth(req, res, c.key, fields.key, userIP)) {
+      res.write("Unauthorized"); 
+      res.end(); 
+      return console.log(`Unauthorized User | File Upload | ${userIP}`)
+    }
     let oldpath = files.fdata.path
     let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z]+)+/g, "").toString()}`
-    let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
     if(fields.key === c.admin.key) {
       if(Math.round((files.fdata.size/1024)/1000) > c.admin.maxUploadSize) {
         if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
@@ -185,6 +204,43 @@ app.post("/api/sharex", (req, res) => {
           return res.end()
       } else {
         fs.rename(oldpath, newpath, err => {
+          if(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length).toLowerCase() === "md" && c.markdown) { 
+            fs.readFile(newpath, "utf-8", function read(err, data) {
+              let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
+              stream.once("open", fd => {
+                stream.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                <meta name="theme-color" content="#DC603A">
+                <meta property="og:title" content="HPaste">
+                <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+                <script src="highlight.pack.js"></script>
+                <script src="highlightjs-line-numbers.min.js"></script>
+                </head>
+                <style>
+                body {
+                  margin-top: 15px;
+                  margin-bottom: 15px;
+                  margin-right: 15px;
+                  margin-left: 15px;
+                }
+                </style>
+                <body>
+                ${md.render(data)}
+                <script>hljs.initHighlightingOnLoad()</script>
+                <script>hljs.initLineNumbersOnLoad();</script>
+                </body>
+                </html>`)
+                stream.end()
+                fs.unlink(newpath, err => {
+                  if(err) return console.log(err)
+                });
+              })
+            })
+          }
           if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${fileName}`)
           if(err) return res.write(err)
           res.write(`http://${req.headers.host}/${fileName}`)
@@ -197,12 +253,50 @@ app.post("/api/sharex", (req, res) => {
           res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
           return res.end()
       } else {
-        if(!c.allowed.includes(files.fdata.type.toString().toLowerCase().replace(/[A-Za-z]+(\/)+/g,""))) {
+        //if(!c.allowed.includes(files.fdata.type.toString().toLowerCase().replace(/[A-Za-z]+(\/)+/g,""))) {
+        if(!c.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length))) {
           if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
-            res.write(`http://${req.headers.host}/${ERR_ILLEGAL_FILE_TYPE}`) 
+            res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`) 
             return res.end()
         } else {
           fs.rename(oldpath, newpath, err => {
+            if(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length).toLowerCase() === "md" && c.markdown) {
+              fs.readFile(newpath, "utf-8", function read(err, data) {
+                let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
+                stream.once("open", fd => {
+                  stream.write(`
+                  <!DOCTYPE html>
+                  <html>
+                  <head>
+                  <meta name="theme-color" content="#DC603A">
+                  <meta property="og:title" content="HPaste">
+                  <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
+                  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+                  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+                  <script src="highlight.pack.js"></script>
+                  <script src="highlightjs-line-numbers.min.js"></script>
+                  </head>
+                  <style>
+                  body {
+                    margin-top: 15px;
+                    margin-bottom: 15px;
+                    margin-right: 15px;
+                    margin-left: 15px;
+                  }
+                  </style>
+                  <body>
+                  ${md.render(data)}
+                  <script>hljs.initHighlightingOnLoad()</script>
+                  <script>hljs.initLineNumbersOnLoad();</script>
+                  </body>
+                  </html>`)
+                  stream.end()
+                  fs.unlink(newpath, err => {
+                    if(err) return console.log(err)
+                  });
+                })
+              })
+            }
             if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}`)
             if(err) return res.write(err)
             res.write(`http://${req.headers.host}/${fileName}`)
@@ -231,6 +325,13 @@ function randomToken(number) {
       text += possible.charAt(Math.floor(Math.random() * possible.length))
   }
   return text
+}
+function auth(req, res, myKey, givenKey, ip) {
+  if(myKey !== null && myKey && myKey !== undefined && givenKey !== myKey) {
+    return false
+  } else {
+    return true
+  }
 }
 
 process.on('unhandledRejection', reason => console.log(reason));
