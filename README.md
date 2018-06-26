@@ -6,7 +6,7 @@
 - ### Plain text uploads
 - ### Code (With [Syntax Highlighting](https://highlightjs.org/))
 - ### URL shortening
-- ### [Formatted markdown](https://github.com/jonschlinkert/remarkable) files
+- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
 - ### Logging via a Discord channel
 
 ## Installation
