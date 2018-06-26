@@ -1,7 +1,5 @@
 {
   "key": "",
-  "host":"",
-  "save": "",
   "maxUploadSize": 50,
   "markdown": true,
   "allowed":[
@@ -9,7 +7,6 @@
   ],
   "admin":{
     "key": "admin pass key goes here",
-    "save": "",
     "maxUploadSize": 1024,
     "allowed": [
     "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html"
@@ -17,7 +14,6 @@
   },
   "paste": {
     "maxUploadSize": 20,
-    "save": "",
     "allowed": [
       "js", "php", "html", "txt", "lua", "json", "yml", "go", "cr", "bat", "css", "cs", "java", "py", "less", "c", "cpp", "ini", "pl", "sql", "rb", "md"
     ]
