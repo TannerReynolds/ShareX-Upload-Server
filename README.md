@@ -1,11 +1,16 @@
 # Nodejs ShareX Server
 
+![main](https://qoilo.com/iZ1s5f)
+![urlShort](https://qoilo.com/ADrWF7)
+![startup](https://qoilo.com/sn7FJP)
+![discordLogging](https://qoilo.com/rUOPbH)
+
 ## Features
 
 - ### Image/Video/General file uploading
 - ### Plain text uploads
 - ### Code (With [Syntax Highlighting](https://highlightjs.org/))
-- ### URL shortening
+- ### URL shortening + a front end for the URL shortener as well
 - ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
 - ### Logging via a Discord channel
 
