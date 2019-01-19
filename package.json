@@ -8,6 +8,7 @@
     "express": "^4.16.2",
     "formidable": "^1.1.1",
     "path": "^0.12.7",
-    "remarkable": "^1.7.1"
+    "remarkable": "^1.7.1",
+    "ejs": "^2.6.1"
   }
 }

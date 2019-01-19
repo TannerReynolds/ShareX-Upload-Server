@@ -8,6 +8,7 @@ const c = require("./config.json")
 const Eris = require("eris")
 const bot = new Eris(c.discordToken, { maxShards: "auto" })
 const Remarkable = require("remarkable")
+const ejs = require("ejs")
 const md = new Remarkable("full", {
   html: true,
   linkify: true,
@@ -15,7 +16,10 @@ const md = new Remarkable("full", {
 })
 
 // APP SETTINGS
+app.set("view engine", "ejs");
 app.use(bodyParser.text())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./uploads/", {
   extensions: c.admin.allowed
 }))
@@ -70,6 +74,18 @@ app.get("/", (req, res) => {
   }
 })
 
+app.get("/short", (req, res) => {
+  if(fs.existsSync("./pages/short.html")) {
+    res.setHeader("Content-Type", "text/html")
+    res.write(fs.readFileSync("./pages/short.html"))
+    res.end()
+  } else {
+    res.setHeader("Content-Type", "text/html")
+    res.write(fs.readFileSync("./pages/404.html"))
+    res.end()
+  }
+})
+
 // ERROR HANDLE EXPLANATION
 app.get("/ERR_FILE_TOO_BIG", (req, res) => {
   res.setHeader("Content-Type", "text/html")
@@ -79,6 +95,13 @@ app.get("/ERR_FILE_TOO_BIG", (req, res) => {
 app.get("/ERR_ILLEGAL_FILE_TYPE", (req, res) => {
   res.setHeader("Content-Type", "text/html")
   res.write(fs.readFileSync("./pages/ERR_ILLEGAL_FILE_TYPE.html"))
+  res.end()
+})
+
+// Version
+app.get("/QWS/version", (req, res) => {
+  res.setHeader("Content-Type", "text/html")
+  res.write("3.0.0")
   res.end()
 })
 
@@ -121,6 +144,25 @@ app.post("/api/shortener", (req, res) => {
   })
 })
 
+// FOR FRONT END SHORTENER PAGE
+app.post("/short", (req, res) => {
+  res.setHeader("Content-Type", "text/text");
+  let fileName = randomToken(4)
+  if(req.body.URL == undefined || req.body.URL == "" || req.body.URL == null) {
+    res.redirect("/short?error=No URL Input");
+    return res.end();
+  } 
+  let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
+    stream.once("open", fd => {
+      console.log(req.body.URL)
+      stream.write(`<meta http-equiv="refresh" content="0;URL='${req.body.URL}'" />`);
+      stream.end();
+      if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
+      res.redirect(`/short?success=http://${req.headers.host}/${fileName}`);
+      return res.end();
+    });
+});
+
 // PASTE ENDPOINT
 app.post("/api/paste", (req, res) => {
   res.setHeader("Content-Type", "text/text")
@@ -150,24 +192,9 @@ app.post("/api/paste", (req, res) => {
             stream.once("open", fd => {
               let cleaned = data.replace(/>/g, "&gt")
               cleaned = cleaned.replace(/</g, "&lt")
-              stream.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                <meta name="theme-color" content="#DC603A">
-                <meta property="og:title" content="HPaste">
-                <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
-                <link rel="stylesheet" href="atom-one-dark.css">
-                <link rel="stylesheet" href="paste.css">
-                <script src="highlight.pack.js"></script>
-                <script src="highlightjs-line-numbers.min.js"></script>
-                </head>
-                <body>
-                <pre><code id="code">${data}</code></pre>
-                <script>hljs.initHighlightingOnLoad()</script>
-                <script>hljs.initLineNumbersOnLoad();</script>
-                </body>
-                </html>`)
+              ejs.renderFile("./views/paste.ejs", {ogDesc: data.match(/.{1,297}/g)[0], pData: data}, {}, (err, str) => {
+                stream.write(str)
+              })
               stream.end()
               fs.unlink(newpath, err => {
                 if(err) return console.log(err)
@@ -208,32 +235,9 @@ app.post("/api/files", (req, res) => {
             fs.readFile(newpath, "utf-8", function read(err, data) {
               let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
               stream.once("open", fd => {
-                stream.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                <meta name="theme-color" content="#DC603A">
-                <meta property="og:title" content="HPaste">
-                <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
-                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-                <script src="highlight.pack.js"></script>
-                <script src="highlightjs-line-numbers.min.js"></script>
-                </head>
-                <style>
-                body {
-                  margin-top: 15px;
-                  margin-bottom: 15px;
-                  margin-right: 15px;
-                  margin-left: 15px;
-                }
-                </style>
-                <body>
-                ${md.render(data)}
-                <script>hljs.initHighlightingOnLoad()</script>
-                <script>hljs.initLineNumbersOnLoad();</script>
-                </body>
-                </html>`)
+                ejs.renderFile("./views/md.ejs", {ogDesc: data.match(/.{1,297}/g)[0], mdRender: md.render(data)}, {}, (err, str) => {
+                  stream.write(str)
+                })
                 stream.end()
                 fs.unlink(newpath, err => {
                   if(err) return console.log(err)
@@ -264,32 +268,9 @@ app.post("/api/files", (req, res) => {
               fs.readFile(newpath, "utf-8", function read(err, data) {
                 let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
                 stream.once("open", fd => {
-                  stream.write(`
-                  <!DOCTYPE html>
-                  <html>
-                  <head>
-                  <meta name="theme-color" content="#DC603A">
-                  <meta property="og:title" content="HPaste">
-                  <meta property="og:description" content="${data.match(/.{1,297}/g)[0]}...">
-                  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-                  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-                  <script src="highlight.pack.js"></script>
-                  <script src="highlightjs-line-numbers.min.js"></script>
-                  </head>
-                  <style>
-                  body {
-                    margin-top: 15px;
-                    margin-bottom: 15px;
-                    margin-right: 15px;
-                    margin-left: 15px;
-                  }
-                  </style>
-                  <body>
-                  ${md.render(data)}
-                  <script>hljs.initHighlightingOnLoad()</script>
-                  <script>hljs.initLineNumbersOnLoad();</script>
-                  </body>
-                  </html>`)
+                  ejs.renderFile("./views/md.ejs", {ogDesc: data.match(/.{1,297}/g)[0], mdRender: md.render(data)}, {}, (err, str) => {
+                    stream.write(str)
+                  })
                   stream.end()
                   fs.unlink(newpath, err => {
                     if(err) return console.log(err)
@@ -309,13 +290,13 @@ app.post("/api/files", (req, res) => {
 })
 
 app.listen(80, () => {
-  console.log("API listening on port 80")
+  console.log("Server listening on port 80")
   if(c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
     bot.connect()
   }
 })
 app.listen(443, () => {
-  console.log("API listening on port 443")
+  console.log("Server listening on port 443")
 })
 function randomToken(number) {
   number = parseInt(number)
@@ -334,5 +315,5 @@ function auth(req, res, myKey, givenKey, ip) {
   }
 }
 
-process.on('unhandledRejection', reason => console.log(reason));
-process.on('uncaughtException', err => console.log(err));
+process.on("unhandledRejection", reason => console.log(reason));
+process.on("uncaughtException", err => console.log(err));
