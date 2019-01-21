@@ -74,6 +74,18 @@ app.get("/", (req, res) => {
   }
 })
 
+app.get("/gallery", (req, res) => {
+  if(fs.existsSync("./pages/gallery.html")) {
+    res.setHeader("Content-Type", "text/html")
+    res.write(fs.readFileSync("./pages/gallery.html"))
+    res.end()
+  } else {
+    res.setHeader("Content-Type", "text/html")
+    res.write(fs.readFileSync("./pages/404.html"))
+    res.end()
+  }
+})
+
 app.get("/short", (req, res) => {
   if(fs.existsSync("./pages/short.html")) {
     res.setHeader("Content-Type", "text/html")
@@ -161,6 +173,28 @@ app.post("/short", (req, res) => {
       res.redirect(`/short?success=http://${req.headers.host}/${fileName}`);
       return res.end();
     });
+});
+
+// GALLERY
+app.post("/gallery", (req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  let password = c.admin.key
+  if(req.body.password !== password) {
+    res.write(fs.readFileSync("./pages/unauthorized.html"))
+    return res.end()
+  }
+  let pics = [];
+  fs.readdir("./uploads/", (err, files) => {
+    files.forEach((file, idx, array) => {
+      if(file.toString().includes(".jpg") || file.toString().includes(".png") || file.toString().includes(".gif")) {
+        pics.push(`http://${req.headers.host}/${file.toString()}`);
+        if (idx === array.length - 1){ 
+          res.render("gallery", {pictures: pics})
+          return res.end(); 
+        }
+      }
+    });
+  });
 });
 
 // PASTE ENDPOINT
