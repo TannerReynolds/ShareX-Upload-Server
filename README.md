@@ -1,6 +1,8 @@
 # Nodejs ShareX Server
 
 ![main](https://qoilo.com/iZ1s5f)
+![gallery](https://qoilo.com/tTI37X)
+![galleryPhoto](https://qoilo.com/Y2wIo1)
 ![urlShort](https://qoilo.com/ADrWF7)
 ![startup](https://qoilo.com/sn7FJP)
 ![discordLogging](https://qoilo.com/rUOPbH)
@@ -13,6 +15,7 @@
 - ### URL shortening + a front end for the URL shortener as well
 - ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
 - ### Logging via a Discord channel
+- ### Password protected gallery page (password is admin key)
 
 ## Installation
 
