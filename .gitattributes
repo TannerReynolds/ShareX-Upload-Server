@@ -1,2 +1,3 @@
 uploads/* linguist-vendored
 .github/* linguist-vendored
+views/* linguist-vendored
