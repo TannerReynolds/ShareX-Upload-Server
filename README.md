@@ -1,12 +1,8 @@
+<p align="center">
+  <img src="https://qoilo.com/JqAOzx.gif">
+</p>
+
 # Nodejs ShareX Server
-
-![main](https://qoilo.com/iZ1s5f)
-![gallery](https://qoilo.com/tTI37X)
-![galleryPhoto](https://qoilo.com/Y2wIo1)
-![urlShort](https://qoilo.com/ADrWF7)
-![startup](https://qoilo.com/sn7FJP)
-![discordLogging](https://qoilo.com/rUOPbH)
-
 ## Features
 
 - ### Image/Video/General file uploading
@@ -160,3 +156,17 @@ Then lastly, you can use them in your destinations settings
 ## Additional Customization
 - ### You can place an index.html file in `/pages/`, but it's not required
 - ### You can use different css stylesheets for the `/api/paste` endpoint. You can find them here: `https://highlightjs.org/`
+
+## Screens
+### Index
+![main](https://qoilo.com/iZ1s5f)
+
+### Gallery
+![gallery](https://qoilo.com/tTI37X)
+![galleryPhoto](https://qoilo.com/Y2wIo1)
+
+### URL Shortener
+![urlShort](https://qoilo.com/ADrWF7)
+
+### Example Discord Log
+![discordLogging](https://qoilo.com/rUOPbH)
