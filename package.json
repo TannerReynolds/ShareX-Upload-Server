@@ -1,6 +1,6 @@
 {
   "name": "sharexapi",
-  "version": "1.2.0",
+  "version": "3.5.0",
   "description": "ShareX API made in Nodejs. Includes images, videos, code, text, and url shortening",
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -9,6 +9,7 @@
     "formidable": "^1.1.1",
     "path": "^0.12.7",
     "remarkable": "^1.7.1",
-    "ejs": "^2.6.1"
+    "ejs": "^2.6.1",
+    "fs-extra": "^7.0.1"
   }
 }

@@ -1,5 +1,5 @@
 const express = require("express")
-const fs = require("fs")
+const fs = require("fs-extra")
 const app = express()
 const bodyParser = require("body-parser")
 const path = require("path")
@@ -9,6 +9,7 @@ const Eris = require("eris")
 const bot = new Eris(c.discordToken, { maxShards: "auto" })
 const Remarkable = require("remarkable")
 const ejs = require("ejs")
+const pkg = require("./package.json")
 const md = new Remarkable("full", {
   html: true,
   linkify: true,
@@ -23,8 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./uploads/", {
   extensions: c.admin.allowed
 }))
-app.use(express.static("./pages/", {
-  extensions: [ "html", "css" ],
+app.use(express.static("./views/", {
+  extensions: [ "css" ],
 }))
 
 // DISCORD BOT SETUP
@@ -63,64 +64,49 @@ if(c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
 
 // INDEX
 app.get("/", (req, res) => {
-  if(fs.existsSync("./pages/index.html")) {
-    res.setHeader("Content-Type", "text/html")
-    res.write(fs.readFileSync("./pages/index.html"))
-    res.end()
-  } else {
-    res.setHeader("Content-Type", "text/html")
-    res.write(fs.readFileSync("./pages/404.html"))
-    res.end()
-  }
+  res.setHeader("Content-Type", "text/html")
+  res.render("index")
+  res.end()
 })
 
 app.get("/gallery", (req, res) => {
-  if(fs.existsSync("./pages/gallery.html")) {
-    res.setHeader("Content-Type", "text/html")
-    res.write(fs.readFileSync("./pages/gallery.html"))
-    res.end()
-  } else {
-    res.setHeader("Content-Type", "text/html")
-    res.write(fs.readFileSync("./pages/404.html"))
-    res.end()
-  }
+  res.setHeader("Content-Type", "text/html")
+  res.render("galleryLogin")
+  res.end()
 })
 
 app.get("/short", (req, res) => {
-  if(fs.existsSync("./pages/short.html")) {
-    res.setHeader("Content-Type", "text/html")
-    res.write(fs.readFileSync("./pages/short.html"))
-    res.end()
-  } else {
-    res.setHeader("Content-Type", "text/html")
-    res.write(fs.readFileSync("./pages/404.html"))
-    res.end()
-  }
+  res.setHeader("Content-Type", "text/html")
+  res.render("short")
+  res.end()
 })
 
 // ERROR HANDLE EXPLANATION
 app.get("/ERR_FILE_TOO_BIG", (req, res) => {
   res.setHeader("Content-Type", "text/html")
-  res.write(fs.readFileSync("./pages/ERR_FILE_TOO_BIG.html"))
+  res.statusCode = 413
+  res.render("ERR_FILE_TOO_BIG")
   res.end()
 })
 app.get("/ERR_ILLEGAL_FILE_TYPE", (req, res) => {
   res.setHeader("Content-Type", "text/html")
-  res.write(fs.readFileSync("./pages/ERR_ILLEGAL_FILE_TYPE.html"))
+  res.statusCode = 415
+  res.render("ERR_ILLEGAL_FILE_TYPE")
   res.end()
 })
 
 // Version
 app.get("/QWS/version", (req, res) => {
   res.setHeader("Content-Type", "text/html")
-  res.write("3.0.0")
+  res.write(pkg.version)
   res.end()
 })
 
 // 404
 app.get("*", (req, res) => {
   res.setHeader("Content-Type", "text/html")
-  res.write(fs.readFileSync("./pages/404.html"))
+  res.statusCode = 404
+  res.render("404")
   res.end()
 })
 
@@ -130,6 +116,7 @@ app.post("/api/shortener", (req, res) => {
   form.parse(req, (err, fields, files) => {
     let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
     if(!auth(req, res, c.key, fields.key, userIP)) {
+      res.statusCode = 401
       res.write("Unauthorized"); 
       res.end(); 
       return console.log(`Unauthorized User | File Upload | ${userIP}`)
@@ -180,7 +167,8 @@ app.post("/gallery", (req, res) => {
   res.setHeader("Content-Type", "text/html");
   let password = c.admin.key
   if(req.body.password !== password) {
-    res.write(fs.readFileSync("./pages/unauthorized.html"))
+    res.statusCode = 401
+    res.render("unauthorized")
     return res.end()
   }
   let pics = [];
@@ -205,6 +193,7 @@ app.post("/api/paste", (req, res) => {
   form.parse(req, (err, fields, files) => {
     let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
     if(!auth(req, res, c.key, fields.key, userIP)) {
+      res.statusCode = 401
       res.write("Unauthorized"); 
       res.end(); 
       return console.log(`Unauthorized User | File Upload | ${userIP}`)
@@ -212,15 +201,17 @@ app.post("/api/paste", (req, res) => {
     let oldpath = files.fdata.path
     let newpath = `./uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z0-9]+)+/g, "").toString()}`;
     if(!c.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length))) {
+      res.statusCode = 415
       res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`) 
       return res.end()
     } else {
       if(Math.round((files.fdata.size/1024)/1000) > c.paste.max_upload_size) {
         if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED PASTE][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${user_ip})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+        res.statusCode = 413
         res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
         return res.end()
       } else {
-        fs.rename(oldpath, newpath, err => {
+        fs.move(oldpath, newpath, err => {
           fs.readFile(newpath, "utf-8", function read(err, data) {
             let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
             stream.once("open", fd => {
@@ -252,6 +243,7 @@ app.post("/api/files", (req, res) => {
   form.parse(req, (err, fields, files) => {
     let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
     if(!auth(req, res, c.key, fields.key, userIP)) {
+      res.statusCode = 401
       res.write("Unauthorized"); 
       res.end(); 
       return console.log(`Unauthorized User | File Upload | ${userIP}`)
@@ -261,10 +253,11 @@ app.post("/api/files", (req, res) => {
     if(fields.key === c.admin.key) {
       if(Math.round((files.fdata.size/1024)/1000) > c.admin.maxUploadSize) {
         if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+          res.statusCode = 413  
           res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
           return res.end()
       } else {
-        fs.rename(oldpath, newpath, err => {
+        fs.move(oldpath, newpath, err => {
           if(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length).toLowerCase() === "md" && c.markdown) { 
             fs.readFile(newpath, "utf-8", function read(err, data) {
               let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
@@ -288,16 +281,18 @@ app.post("/api/files", (req, res) => {
     } else {
       if(Math.round((files.fdata.size/1024)/1000) > c.maxUploadSize) {
         if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
+          res.statusCode = 413
           res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`) 
           return res.end()
       } else {
         //if(!c.allowed.includes(files.fdata.type.toString().toLowerCase().replace(/[A-Za-z]+(\/)+/g,""))) {
         if(!c.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length))) {
           if(monitorChannel !== null) bot.createMessage(monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
+            res.statusCode = 415
             res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`) 
             return res.end()
         } else {
-          fs.rename(oldpath, newpath, err => {
+          fs.move(oldpath, newpath, err => {
             if(files.fdata.name.substring(files.fdata.name.lastIndexOf(".")+1, files.fdata.name.length).toLowerCase() === "md" && c.markdown) {
               fs.readFile(newpath, "utf-8", function read(err, data) {
                 let stream = fs.createWriteStream(`./uploads/${fileName}.html`)
@@ -342,7 +337,7 @@ function randomToken(number) {
   return text
 }
 function auth(req, res, myKey, givenKey, ip) {
-  if(myKey !== null && myKey && myKey !== undefined && givenKey !== myKey) {
+  if(myKey !== null && myKey && myKey !== undefined && givenKey !== myKey && givenKey !== c.admin.key) {
     return false
   } else {
     return true
