@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://qoilo.com/JqAOzx.gif">
+  <img src="https://qoilo.com/8yh8I9.gif">
 </p>
 
 # Nodejs ShareX Server
