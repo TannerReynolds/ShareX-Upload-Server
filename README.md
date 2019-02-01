@@ -5,13 +5,12 @@
 # Nodejs ShareX Server
 ## Features
 
-- ### Image/Video/General file uploading
-- ### Plain text uploads
-- ### Code (With [Syntax Highlighting](https://highlightjs.org/))
-- ### URL shortening + a front end for the URL shortener as well
-- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
-- ### Logging via a Discord channel
-- ### Password protected gallery page (password is admin key)
+- ### Image/Video/General file uploading | [Example](https://qoilo.com/1nSwSV)
+- ### Text (With [Syntax Highlighting](https://highlightjs.org/)) | [Example](https://qoilo.com/U8BA3)
+- ### URL shortening + a front end for the URL shortener as well | [Demo](https://qoilo.com/short)
+- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files | [Example](https://qoilo.com/8Tecjl)
+- ### Logging via a Discord channel | [Screenshot](http://qoilo.com/yxzfTn)
+- ### Password protected gallery page (password is admin key) | [Demo](https://qoilo.com/gallery)
 
 ## Installation
 
@@ -96,7 +95,7 @@ You must fill this out for the webserver to work properly. Below explains the co
 ```
 
 #### Get it up and running
-Once you fill out your config ile, you're ready to move it to your webserver.
+Once you fill out your config file, you're ready to move it to your webserver.
 You can transfer the files to the webserver however you want. Whether it be dragging it over via an ftp client, or by cloning this repository and filling out the config after from the server. Either way, once you get your files over, you're ready to start installing dependencies.
 To install dependencies, go to where you put the webserver files, and type in `npm install`
 
@@ -153,20 +152,3 @@ Then lastly, you can use them in your destinations settings
 
 ![](https://i.imgur.com/dp5EOWu.png)
 
-## Additional Customization
-- ### You can place an index.html file in `/pages/`, but it's not required
-- ### You can use different css stylesheets for the `/api/paste` endpoint. You can find them here: `https://highlightjs.org/`
-
-## Screens
-### Index
-![main](https://qoilo.com/iZ1s5f)
-
-### Gallery
-![gallery](https://qoilo.com/tTI37X)
-![galleryPhoto](https://qoilo.com/Y2wIo1)
-
-### URL Shortener
-![urlShort](https://qoilo.com/ADrWF7)
-
-### Example Discord Log
-![discordLogging](https://qoilo.com/rUOPbH)
