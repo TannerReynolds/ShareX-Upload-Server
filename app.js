@@ -18,6 +18,7 @@ const md = new Remarkable("full", {
     linkify: true,
     typographer: true
 })
+const https = require("https")
 
 // APP SETTINGS
 app.set("view engine", "ejs");
@@ -358,9 +359,14 @@ app.listen(80, () => {
         bot.connect()
     }
 })
-app.listen(443, () => {
-    logger.success("Server listening on port 443")
-})
+if(c.secure === true) {
+    let privateKey = fs.readFileSync("key.pem");
+    let certificate = fs.readFileSync("cert.pem");
+    https.createServer({
+        key: privateKey,
+        cert: certificate
+    }, app).listen(443);
+}
 
 function randomToken(number) {
     number = parseInt(number)
