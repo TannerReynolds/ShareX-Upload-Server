@@ -353,19 +353,23 @@ app.post("/api/files", (req, res) => {
     })
 })
 
-app.listen(80, () => {
-    logger.success("Server listening on port 80")
+if(c.secure === true) {
     if (c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
         bot.connect()
     }
-})
-if(c.secure === true) {
     let privateKey = fs.readFileSync("key.pem");
     let certificate = fs.readFileSync("cert.pem");
     https.createServer({
         key: privateKey,
         cert: certificate
-    }, app).listen(443);
+    }, app).listen(c.securePort);
+} else {
+    app.listen(c.port, () => {
+        logger.success("Server listening on port 80")
+        if (c.discordToken && c.discordToken !== undefined && c.discrdToken !== null) {
+            bot.connect()
+        }
+    })
 }
 
 function randomToken(number) {
