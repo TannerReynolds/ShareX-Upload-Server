@@ -152,3 +152,6 @@ Then lastly, you can use them in your destinations settings
 
 ![](https://i.imgur.com/dp5EOWu.png)
 
+## Made By
+#### [Ken](https://github.com/NotWeeb) - Initial File Uploader
+#### [Aetheryx](https://github.com/aetheryx) - Webserver Structure
