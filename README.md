@@ -155,3 +155,4 @@ Then lastly, you can use them in your destinations settings
 ## Credits
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
 #### [Aetheryx](https://github.com/aetheryx) - Webserver Structure
+#### [Jaex](https://github.com/jaex) - ShareX
