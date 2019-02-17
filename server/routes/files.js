@@ -21,7 +21,15 @@ async function files(req, res) {
             return this.log.warning(`Unauthorized User | File Upload | ${userIP}`)
         }
         let oldpath = files.fdata.path
-        let newpath = `${__dirname}/../uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z0-9]+)+/g, "").toString()}`
+        let fileExt = files.fdata.name.substring(files.fdata.name.lastIndexOf(".") + 1, files.fdata.name.length).toLowerCase()
+        console.log(fileExt)
+        let newpath = `${__dirname}/../uploads/${fileName}.${fileExt}`
+        let returnedFileName
+        if(!fileExt.includes("png") && !fileExt.includes("jpg") && !fileExt.includes("jpeg") && !fileExt.includes("md")) {
+            returnedFileName = `${fileName}.${fileExt}`
+        } else {
+            returnedFileName = fileName
+        }
         if (fields.key === this.c.admin.key) {
             if (Math.round((files.fdata.size / 1024) / 1000) > this.c.admin.maxUploadSize) {
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
@@ -30,7 +38,7 @@ async function files(req, res) {
                 return res.end()
             } else {
                 fs.move(oldpath, newpath, err => {
-                    if (files.fdata.name.substring(files.fdata.name.lastIndexOf(".") + 1, files.fdata.name.length).toLowerCase() === "md" && this.c.markdown) {
+                    if (fileExt.toLowerCase() === "md" && this.c.markdown) {
                         fs.readFile(newpath, "utf-8", function read(err, data) {
                             let stream = fs.createWriteStream(`${__dirname}/../uploads/${fileName}.html`)
                             stream.once("open", fd => {
@@ -47,11 +55,11 @@ async function files(req, res) {
                             })
                         })
                     }
-                    if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${fileName}`)
+                    if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${returnedFileName}`)
                     if (err) return res.write(err)
-                    this.log.verbose(`New File Upload: http://${req.headers.host}/${fileName} | IP: ${userIP}`)
-                    let insecure = `http://${req.headers.host}/${fileName}`
-                    let secure = `https://${req.headers.host}/${fileName}`
+                    this.log.verbose(`New File Upload: http://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
+                    let insecure = `http://${req.headers.host}/${returnedFileName}`
+                    let secure = `https://${req.headers.host}/${returnedFileName}`
                     res.write(req.secure ? secure : insecure)
                     return res.end()
                 })
@@ -63,14 +71,14 @@ async function files(req, res) {
                 res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
                 return res.end()
             } else {
-                if (!this.c.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".") + 1, files.fdata.name.length))) {
+                if (!this.c.allowed.includes(fileExt)) {
                     if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
                     res.statusCode = 415
                     res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`)
                     return res.end()
                 } else {
                     fs.move(oldpath, newpath, err => {
-                        if (files.fdata.name.substring(files.fdata.name.lastIndexOf(".") + 1, files.fdata.name.length).toLowerCase() === "md" && this.c.markdown) {
+                        if (fileExt.toLowerCase() === "md" && this.c.markdown) {
                             fs.readFile(newpath, "utf-8", function read(err, data) {
                                 let stream = fs.createWriteStream(`${__dirname}/../uploads/${fileName}.html`)
                                 stream.once("open", fd => {
@@ -87,11 +95,11 @@ async function files(req, res) {
                                 })
                             })
                         }
-                        if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${fileName}`)
+                        if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${returnedFileName}`)
                         if (err) return res.write(err)
-                        this.log.verbose(`New File Upload: http://${req.headers.host}/${fileName} | IP: ${userIP}`)
-                        let insecure = `http://${req.headers.host}/${fileName}`
-                        let secure = `https://${req.headers.host}/${fileName}`
+                        this.log.verbose(`New File Upload: http://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
+                        let insecure = `http://${req.headers.host}/${returnedFileName}`
+                        let secure = `https://${req.headers.host}/${returnedFileName}`
                         res.write(req.secure ? secure : insecure)
                         return res.end()
                     })

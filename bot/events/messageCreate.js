@@ -5,7 +5,7 @@ async function messageCreate(msg) {
     const command = args.shift().toString().toLowerCase()
     for (i = 0; this.commands.length > i; i++) {
         if (this.commands[i].command == command) {
-            await this.commands[i].execute(bot, msg, args, this.commands, this.c.prefix)
+            await this.commands[i].execute(this.bot, msg, args, this.commands, this.c.prefix)
             break
         }
     }
