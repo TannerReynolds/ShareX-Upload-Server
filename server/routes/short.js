@@ -22,6 +22,9 @@ async function post(req, res) {
         let insecure = `/short?success=http://${req.headers.host}/${fileName}`
         let secure = `/short?success=https://${req.headers.host}/${fileName}`
         res.redirect(req.secure ? secure : insecure)
+        this.db.get("files")
+            .push({path: `/${fileName}`, ip: userIP, views: 0})
+            .write();
         return res.end();
     });
 }

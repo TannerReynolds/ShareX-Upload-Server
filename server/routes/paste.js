@@ -14,6 +14,9 @@ async function paste(req, res) {
             res.end();
             return this.log.warning(`Unauthorized User | File Upload | ${userIP}`)
         }
+        this.db.get("files")
+            .push({path: `/${fileName}`, ip: userIP, views: 0})
+            .write();
         let oldpath = files.fdata.path
         let newpath = `${__dirname}/../uploads/${fileName+files.fdata.name.toString().match(/(\.)+([a-zA-Z0-9]+)+/g, "").toString()}`;
         if (!this.c.paste.allowed.includes(files.fdata.name.substring(files.fdata.name.lastIndexOf(".") + 1, files.fdata.name.length))) {

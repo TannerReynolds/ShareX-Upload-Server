@@ -14,15 +14,21 @@ async function files(req, res) {
     let form = new formidable.IncomingForm()
     form.parse(req, (err, fields, files) => {
         let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
-        if (!this.auth(this.c.key, fields.key)) {
+        usingUploader = false
+        if(fields.passwordUploader && !fields.key) usingUploader = true
+        if (!this.auth(this.c.key, fields.key) && usingUploader === false) {
             res.statusCode = 401
             res.write("Unauthorized");
             res.end();
             return this.log.warning(`Unauthorized User | File Upload | ${userIP}`)
+        } else if(!this.auth(this.c.key, fields.passwordUploader) && usingUploader === true) {
+            res.statusCode = 401
+            res.redirect("/upload?error=Incorrect_Password")
+            res.end()
+            return this.log.warning(`Unauthorized User | File Upload | ${userIP}`)
         }
         let oldpath = files.fdata.path
         let fileExt = files.fdata.name.substring(files.fdata.name.lastIndexOf(".") + 1, files.fdata.name.length).toLowerCase()
-        console.log(fileExt)
         let newpath = `${__dirname}/../uploads/${fileName}.${fileExt}`
         let returnedFileName
         if(!fileExt.includes("png") && !fileExt.includes("jpg") && !fileExt.includes("jpeg") && !fileExt.includes("md")) {
@@ -30,12 +36,20 @@ async function files(req, res) {
         } else {
             returnedFileName = fileName
         }
+        this.db.get("files")
+            .push({path: `/${returnedFileName}`, ip: userIP, views: 0})
+            .write();
         if (fields.key === this.c.admin.key) {
             if (Math.round((files.fdata.size / 1024) / 1000) > this.c.admin.maxUploadSize) {
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
                 res.statusCode = 413
-                res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
-                return res.end()
+                if(usingUploader === true) {
+                    res.redirect("/upload?error=File_Too_Big")
+                    return res.end()
+                } else {
+                    res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
+                    return res.end()
+                }
             } else {
                 fs.move(oldpath, newpath, err => {
                     if (fileExt.toLowerCase() === "md" && this.c.markdown) {
@@ -58,24 +72,41 @@ async function files(req, res) {
                     if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${returnedFileName}`)
                     if (err) return res.write(err)
                     this.log.verbose(`New File Upload: http://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
-                    let insecure = `http://${req.headers.host}/${returnedFileName}`
-                    let secure = `https://${req.headers.host}/${returnedFileName}`
-                    res.write(req.secure ? secure : insecure)
-                    return res.end()
+                    if(usingUploader === true) {
+                        let insecure = `/upload?success=http://${req.headers.host}/${returnedFileName}`
+                        let secure = `/upload?success=https://${req.headers.host}/${returnedFileName}`
+                        res.redirect(req.secure ? secure : insecure)
+                        return res.end()
+                    } else {
+                        let insecure = `http://${req.headers.host}/${returnedFileName}`
+                        let secure = `https://${req.headers.host}/${returnedFileName}`
+                        res.write(req.secure ? secure : insecure)
+                        return res.end()
+                    }
                 })
             }
         } else {
             if (Math.round((files.fdata.size / 1024) / 1000) > this.c.maxUploadSize) {
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
                 res.statusCode = 413
-                res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
-                return res.end()
+                if(usingUploader === true) {
+                    res.redirect("/upload?error=File_Too_Big")
+                    return res.end()
+                } else {
+                    res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
+                    return res.end()
+                }
             } else {
                 if (!this.c.allowed.includes(fileExt)) {
                     if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
                     res.statusCode = 415
-                    res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`)
-                    return res.end()
+                    if(usingUploader === true) {
+                        res.redirect("/upload?error=Illegal_File_Type")
+                        return res.end()
+                    } else {
+                        res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`)
+                        return res.end()
+                    }
                 } else {
                     fs.move(oldpath, newpath, err => {
                         if (fileExt.toLowerCase() === "md" && this.c.markdown) {
@@ -98,10 +129,17 @@ async function files(req, res) {
                         if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${returnedFileName}`)
                         if (err) return res.write(err)
                         this.log.verbose(`New File Upload: http://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
-                        let insecure = `http://${req.headers.host}/${returnedFileName}`
-                        let secure = `https://${req.headers.host}/${returnedFileName}`
-                        res.write(req.secure ? secure : insecure)
-                        return res.end()
+                        if(usingUploader === true) {
+                            let insecure = `/upload?success=http://${req.headers.host}/${returnedFileName}`
+                            let secure = `/upload?success=https://${req.headers.host}/${returnedFileName}`
+                            res.redirect(req.secure ? secure : insecure)
+                            return res.end()
+                        } else {
+                            let insecure = `http://${req.headers.host}/${returnedFileName}`
+                            let secure = `https://${req.headers.host}/${returnedFileName}`
+                            res.write(req.secure ? secure : insecure)
+                            return res.end()
+                        }
                     })
                 }
             }

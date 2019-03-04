@@ -30,6 +30,9 @@ async function shortener(req, res) {
                 let insecure = `http://${req.headers.host}/${fileName}`
                 let secure = `https://${req.headers.host}/${fileName}`
                 res.write(req.secure ? secure : insecure)
+                this.db.get("files")
+                    .push({path: `/${fileName}`, ip: userIP, views: 0})
+                    .write();
                 return res.end()
             })
         }

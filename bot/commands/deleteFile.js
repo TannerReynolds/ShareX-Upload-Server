@@ -3,7 +3,7 @@ module.exports = {
   command:"df",
   description: "Delete a file from your webserver (https://{domain}/{fileName})",
   syntax: "{PREFIX}df [fileName]",
-  execute:async (bot, msg, args) => {
+  execute:async (_this, msg, args) => {
     if (!args.join(" ")) return msg.channel.createMessage("No arguments were given")
     let fileName = args.join(" ")
     let filesDir = `${__dirname}/../../server/uploads`
