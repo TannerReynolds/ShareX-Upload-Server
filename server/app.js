@@ -155,10 +155,10 @@ class ShareXAPI {
   }
 
   async loadCommands() {
-    fs.readdir(`${__dirname}./../bot/commands`, (err, files) => {
+    fs.readdir(`${__dirname}/../bot/commands`, (err, files) => {
         files.forEach(file => {
             if (file.toString().includes(".js")) {
-                this.commands.push(require(`${__dirname}./../bot/commands/${file.toString()}`))
+                this.commands.push(require(`${__dirname}/../bot/commands/${file.toString()}`))
                 this.log.verbose(`Loaded Command: ${file.toString()}`)
             }
         })
