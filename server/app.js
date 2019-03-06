@@ -13,6 +13,7 @@ const low = require("lowdb")
 const FileSync = require("lowdb/adapters/FileSync")
 const adapter = new FileSync("db.json")
 const db = low(adapter)
+const helmet = require("helmet")
 
 class ShareXAPI {
   constructor (c) {
@@ -32,6 +33,7 @@ class ShareXAPI {
     this.app = app
     this.app.set("view engine", "ejs");
     this.app.set('views', path.join(__dirname, '/views'));
+    this.app.use(helmet())
     this.app.use(bodyParser.text())
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({
