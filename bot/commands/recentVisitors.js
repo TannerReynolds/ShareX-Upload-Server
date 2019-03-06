@@ -17,7 +17,7 @@ module.exports = {
           for(i = 0; i < maximum; i++) {
               let targetData = _this.db.get("visitors").find({date: recent[i]}).value();
               visitorsCollection.push(`[IP]: ${targetData.ip}\n[Page]: ${targetData.path}`)
-              if(i + 1 >= recent.length) {
+              if(i + 1 >= maximum) {
                   msg.channel.createMessage(`**ShareX Server Recent Visitors**\n\`\`\`ini\n${visitorsCollection.join("\n\n")}\n\`\`\``)
               }
           }
