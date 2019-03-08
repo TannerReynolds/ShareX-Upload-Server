@@ -1,5 +1,5 @@
-const c = require(`${__dirname}/../config.json`)
-function auth(myKey, givenKey) {
+function auth(myKey, givenKey, c) {
+    if(c.public === true) return true
     if (myKey !== null && myKey && myKey !== undefined && givenKey !== myKey && givenKey !== c.admin.key) {
         return false
     } else {

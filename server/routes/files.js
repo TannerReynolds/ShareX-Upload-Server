@@ -14,14 +14,18 @@ async function files(req, res) {
     let form = new formidable.IncomingForm()
     form.parse(req, (err, fields, files) => {
         let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
-        usingUploader = false
-        if(fields.passwordUploader && !fields.key) usingUploader = true
-        if (!this.auth(this.c.key, fields.key) && usingUploader === false) {
+        let usingUploader = false
+        if(files.fdataUploader && !fields.key) {
+            usingUploader = true
+            files.fdata = files.fdataUploader
+        }
+        if (!this.auth(this.c.key, fields.key, this.c) && usingUploader === false) {
             res.statusCode = 401
             res.write("Unauthorized");
             res.end();
             return this.log.warning(`Unauthorized User | File Upload | ${userIP}`)
-        } else if(!this.auth(this.c.key, fields.passwordUploader) && usingUploader === true) {
+        } else if(!this.auth(this.c.key, fields.password, this.c) && usingUploader === true) {
+            this.log.warning(this.auth(this.c.key, fields.password, this.c))
             res.statusCode = 401
             res.redirect("/upload?error=Incorrect_Password")
             res.end()

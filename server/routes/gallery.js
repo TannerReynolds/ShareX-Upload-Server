@@ -8,7 +8,7 @@ async function post(req, res) {
     let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
     res.setHeader("Content-Type", "text/html");
     let password = this.c.admin.key
-    if (!this.auth(password, req.body.password)) {
+    if (!this.auth(password, req.body.password, {public: false, admin: {key: this.c.admin.key}})) {
         res.statusCode = 401
         res.render("unauthorized")
         res.end();

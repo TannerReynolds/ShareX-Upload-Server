@@ -51,8 +51,10 @@
         <form action="/api/files" method="post" style="background-color: rgb(51,51,51);" enctype="multipart/form-data" name="fdataForm">
             <h2 class="sr-only">Upload Form</h2>
             <div class="illustration"><i class="fa fa-photo" style="color: rgb(230,94,94);"></i></div>
-            <div class="form-group"><input class="form-control" type="password" name="passwordUploader" placeholder="Password" id="passwordUploader" style="background-color: rgb(51,51,51);"></div>
-            <div class = "form-group"><input type="file" id="fdata" name="fdata" required/></div>
+            <% if(!public) { %>
+              <div class="form-group"><input class="form-control" type="password" name="password" placeholder="Password" id="password" style="background-color: rgb(51,51,51);"></div> 
+            <% } %>
+            <div class = "form-group"><input type="file" id="fdataUploader" name="fdataUploader" required/></div>
             <div class="form-group"><button class="btn btn-primary btn-block" type="submit" style="background-color: rgb(230,94,94);">Upload</button></div>
         </form>
     </div>

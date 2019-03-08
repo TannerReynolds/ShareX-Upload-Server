@@ -1,5 +1,6 @@
 {
   "key": "",
+  "public": false,
   "maxUploadSize": 50,
   "markdown": true,
   "port": 80,

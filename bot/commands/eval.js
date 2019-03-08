@@ -25,61 +25,45 @@ module.exports = {
             });
             if (evaled.length > 1000) {
                 let output = clean(evaled).charLimitSplit(1000);
-                return msg.channel.createMessage({
-                    embed: {
-                        color: 0x36393E,
-                        fields: [{
-                            name: "Input",
-                            value: `\`\`\`JS\n${code}\`\`\``
-                        }, {
-                            name: "Output",
-                            value: `\`\`\`JS\n${clean(output[0])} | ... |\`\`\``
-                        }]
-                    }
-                });
+                return success(code, output[0])
             } else {
-                return msg.channel.createMessage({
-                    embed: {
-                        color: 0x36393E,
-                        fields: [{
-                            name: "Input",
-                            value: `\`\`\`JS\n${code}\`\`\``
-                        }, {
-                            name: "Output",
-                            value: `\`\`\`JS\n${clean(evaled)}\`\`\``
-                        }]
-                    }
-                });
+                return success(code, clean(evaled))
             }
         } catch (err) {
             if (err.length > 1000) {
-                let error = err.charLimitSplit(1000);
-                return msg.channel.createMessage({
-                    embed: {
-                        color: 0x36393E,
-                        fields: [{
-                            name: "Input",
-                            value: `\`\`\`JS\n${code}\`\`\``
-                        }, {
-                            name: "Error Output",
-                            value: `\`\`\`JS\n${error[0]} | ... |\`\`\``
-                        }]
-                    }
-                });
+                let errorSplit = err.charLimitSplit(1000);
+                return error(code, errorSplit)
             } else {
-                return msg.channel.createMessage({
-                    embed: {
-                        color: 0x36393E,
-                        fields: [{
-                            name: "Input",
-                            value: `\`\`\`JS\n${code}\`\`\``
-                        }, {
-                            name: "Error Output",
-                            value: `\`\`\`JS\n${clean(err)}\`\`\``
-                        }]
-                    }
-                });
+                return error(code, clean(err))
             }
+        }
+        async function success(input, output) {
+            msg.channel.createMessage({
+                embed: {
+                    color: 0x36393E,
+                    fields: [{
+                        name: "Input",
+                        value: `\`\`\`JS\n${input}\`\`\``
+                    }, {
+                        name: "Output",
+                        value: `\`\`\`JS\n${output} | ... |\`\`\``
+                    }]
+                }
+            });
+        }
+        async function error(input, output) {
+            msg.channel.createMessage({
+                embed: {
+                    color: 0x36393E,
+                    fields: [{
+                        name: "Input",
+                        value: `\`\`\`JS\n${input}\`\`\``
+                    }, {
+                        name: "Error Output",
+                        value: `\`\`\`JS\n${output}\`\`\``
+                    }]
+                }
+            });
         }
         function clean(text) {
             if (typeof(text) === "string") {
