@@ -4,7 +4,7 @@ const fs = require("fs-extra")
 const Remarkable = require("remarkable")
 const ejs = require("ejs")
 const md = new Remarkable("full", {
-    html: true,
+    html: false,
     linkify: true,
     typographer: true
 })

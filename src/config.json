@@ -1,0 +1,27 @@
+{
+  "key": "",
+  "public": false,
+  "maxUploadSize": 50,
+  "markdown": true,
+  "port": 80,
+  "secure": true,
+  "securePort": 443,
+  "ratelimit": 1000,
+  "allowed":[
+    "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
+  ],
+  "admin":{
+    "key": "admin pass key goes here",
+    "maxUploadSize": 1024,
+    "allowed": [
+    "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html"
+     ]
+  },
+  "paste": {
+    "maxUploadSize": 20
+  },
+  "discordToken": "Discord Token Here (required if you want API monitoring through Discord)",
+  "discordAdminIDs": ["discord IDs of people who can run commands go here", "Like this"],
+  "discordChannelID": "the channel you're trying to send api monitor updates to",
+  "prefix": "enter prefix for bot commands here"
+}
