@@ -5,152 +5,92 @@
 # Nodejs ShareX Server
 ## Features
 
-- ### Image/Video/General file uploading | [Example](https://qoilo.com/1nSwSV)
-- ### Text (With [Syntax Highlighting](https://highlightjs.org/)) | [Example](https://qoilo.com/U8BA3)
-- ### URL shortening + a front end for the URL shortener as well | [Demo](https://qoilo.com/short)
-- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files | [Example](https://qoilo.com/8Tecjl)
-- ### Logging via a Discord channel | [Screenshot](http://qoilo.com/yxzfTn)
-- ### Password protected gallery page (password is admin key) | [Demo](https://qoilo.com/gallery)
+- ### Image/Video/General file uploading
+- ### Text (With [Syntax Highlighting](https://highlightjs.org/))
+- ### URL shortening + a front end for the URL shortener as well
+- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
+- ### Logging via a Discord channel
+- ### Server Administration using Discord bot commands
+- ### Front end upload page
+- ### Password protected gallery page (password is admin key)
 
-## Installation
+#### [You can demo the features/server here](http://155.138.230.9/)
 
-- ### Install [Nodejs](https://nodejs.org/en/)
-- ### Download/Clone repository
-- ### Install dependencies
-- ### Configure webserver
+## Installation (Ubuntu 16.04 Server)
+```sh
+git clone https://github.com/TannerReynolds/ShareX-Custom-Upload-Server.git
+cd ShareX-Custom-Upload-Server/src
+chmod +x install.sh
+./install.sh
+```
 
-## Basic Install and Configuration Instructions
-#### Installing nodejs and getting the repository
-Before you use this, you must first install [nodejs version 8+](https://nodejs.org/) on your webserver. Node has written [instructions](https://nodejs.org/en/download/package-manager/) on how to download node via a package manager, depending on your server's OS
-
-Once nodejs is installed, then download this repository by pressing this button
-
-![Download Button](https://i.imgur.com/gTo8kUL.png)
-
-You can verify that nodejs is installed by going into your server's terminal, and typing `node -v` like so. It should give you a version number. Ensure this version number starts with a 9 or higher.
-
-![Verify Node Installation](https://i.imgur.com/N4bcry9.png)
-
-Then extract the zipped files into a folder somewhere. After this is done, you're ready to configure
-
-#### Configuration
+## Configuration
 
 In the files you downloaded from this repository, you will see a file called `config.json` 
 You must fill this out for the webserver to work properly. Below explains the configuration file and what each part does
 
 ```js
 {
-  "key": "", // password needed for all uploads. Leave blank if you want this to be public
-  "maxUploadSize": 50, // Size in MB
-  "markdown": true, //Whether or not you want markdown files to be uploaded as raw markdown files, or to be rendered as html
-  "allowed":[ // supported filetypes
-    "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
-  ],
-  "admin":{
-    "key": "password1234", // "Admin" password used for higher upload sizes/more supported file types 
-    "maxUploadSize": 1024, // Size in MB
-    "allowed": [ // supported filetypes for administrator uploads
-    "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html"
-     ]
-  },
-  "paste": {
-    "maxUploadSize": 20, // Size in MB
-    "allowed": [ // supported filetypes (all gets converted to an html document)
-      "js", "php", "html", "txt", "lua", "json", "yml", "go", "cr", "bat", "css", "cs", "java", "py", "less", "c", "cpp", "ini", "pl", "sql", "rb"
-    ]
-  },
-  "discordToken": "thisismydiscordapitoken", // Leave blank if you dont want to monitor uploads/shortened urls through Discord (https://discordapp.com/developers)
-  "discordAdminIDs": ["discord IDs of people who can run commands go here", "Like this"], // IDs of people who are able to run commands with the bot
-  "discordChannelID": "2222222222222" // channel the API will use to monitor (will send user IP addresses to this channel, along with what they uploaded, filezise, type of user (user/admin), and a link to their upload. For shortened URLS, it will show the URL they shortened)
-  "prefix": "enter prefix for bot commands here" // prefix the bot will use
-}
-```
-#### Example Configuration
-```json
-{
-  "key": "hello",
-  "maxUploadSize": 50,
+  "key": "", // Password for private uploading
+  "public": false, // Disables auth and does not render a password field for /upload
+  "maxUploadSize": 50, // max upload size for non-admins using regular key in MB
+  "markdown": true, // enables markdown rendering (upload whole .md file for render)
+  "port": 80, // port to listen on
+  "secure": true, // Whether or not you want https. (make sure key and cert.pem are in src directory)
+  "securePort": 443, // Port to use when secure is true
+  "ratelimit": 1000, // Ratelimit for POSTing in milliseconds
   "allowed":[
-    "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "md"
-  ],
-  "markdown": true,
+    "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
+  ], // Allowed file types for non-admins
   "admin":{
-    "key": "yes",
-    "maxUploadSize": 1024,
+    "key": "", // Admin password for uploading & for gallery access
+    "maxUploadSize": 1024, // Max upload size for admin in MB
     "allowed": [
-    "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html", "md"
-     ]
+    "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html"
+     ] // Allowed file types for admins
   },
   "paste": {
-    "maxUploadSize": 20,
-    "allowed": [
-      "js", "php", "html", "txt", "lua", "json", "yml", "go", "cr", "bat", "css", "cs", "java", "py", "less", "c", "cpp", "ini", "pl", "sql", "rb", "md"
-    ]
+    "maxUploadSize": 20 // allowed paste upload size in MB
   },
-  "discordToken": "NDYwNTcwNTY2MDA5NTUyODk2.DhGrSw.46723KYCM99BntiIBpY3LhTPtpc",
-  "discordAdminIDs": ["205912295837138944", "225391805737336833"],
-  "discordChannelID": "437516756928561153",
-  "prefix": "!"
+  "discordToken": "", // Discord bot token
+  "discordAdminIDs": ["discord IDs of people who can run commands go here", "Like this"], // User IDs in an array
+  "discordChannelID": "", // Channel ID for monitoring uploads to
+  "prefix": "" // Bot Prefix
 }
 ```
 
-#### Get it up and running
-Once you fill out your config file, you're ready to move it to your webserver.
-You can transfer the files to the webserver however you want. Whether it be dragging it over via an ftp client, or by cloning this repository and filling out the config after from the server. Either way, once you get your files over, you're ready to start installing dependencies.
-To install dependencies, go to where you put the webserver files, and type in `npm install`
+## Running The Server
+Once you've properly configured your server, you can run `node index.js` in the src folder to start the server.
+You can keep your server running forever if you use a process manager, like pm2. pm2 installs along with your server if you used the install.sh script to install your server. Otherwise you can run `npm i -g pm2` to install pm2. Then you can run your server by running `pm2 start index.js`, and monitor logs and such using `pm2 monit`
 
-![Npm Install](https://i.imgur.com/B8y9mF5.png)
-
-Don't pay attention to the "npm WARN" lines, you do not need to worry about those.
-Once you install dependencies, it's recommended you install pm2 additionally. PM2 is a process manager for node and will keep your server online, and will automatically restart it if it goes down. It also has resource and log monitor features, it's generally a good package to have with any node project.
-
-To install PM2, simply type `npm install -g pm2`
-
-Once pm2 is installed, you are ready to start your webserver. But before you start, ensure nothing on your server is using port 80 or port 443, as the webserver will need these ports to function properly. 
-If this is done, you're ready to start your webserver by typing `pm2 start app.js`
 ## Setting up Discord logging
 if you wish to log your webserver's activity in a Discord channel for whatever reason, you can.
 [Here is information on how to setup a bot account and get the information needed for Discord logging](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
-## Setting Up ShareX to work with your webserver
-Firstly, go to `Destination Settings`
 
-![](https://i.imgur.com/EO6g5XA.png)
+## Configuring Your ShareX Client
+ - [Download this repository to the PC your ShareX is on](https://github.com/TannerReynolds/ShareX-Custom-Upload-Server/archive/master.zip)
+ - Navigate to `Destinations -> Custom Uploader Settings`
+ - Import the sxcu files from the downloaded zip one by one `->`
+  
+  ![Import From File](https://qoilo.com/Ho38au)
+  
+  ![Importing File](https://qoilo.com/f3BN0R)
+  
+ - Properly Configure Template `->`
+ 
+ ![template](https://qoilo.com/ZKEdQn)
+ 
+ **Purple**: `http` or `https`. If your server's `secure` setting is set to `true` then use https.
+ 
+ **Green**: Your domain goes here along with any subdomain you may use. Example: `i.qoilo.com`
+ 
+ **Red**: Password goes here. if your `public` setting is set to `true`, dont worry about this.
+ 
+ **Yellow**: Ensure each field is using the correct setting
+ 
+ - Change `Destination Location`
 
-Go all the way to the bottom. Here you will make your first profile. This one is for file and image uploading.
-
-![](https://i.imgur.com/BxNEtJq.png)
-
-Click `Add` near the top, and name your files/image profile
-
-![](https://i.imgur.com/DWKE8tR.png)
-
-From here you can fill out the rest of the middle stack
-
-![](https://i.imgur.com/AsOb6sT.png)
-
-The request URL for file and image uploads will be `http:// OR https://[YOUR URL OR IP HERE]/api/files`
-
-The request URL for the text uploader uploads will be `http:// OR https://[YOUR URL OR IP HERE]/api/paste`
-
-Under `Arguments` You can type in your key. If you decided to have your uploader be private by adding a key, this is where the user would type their password in. Once typed in, just click `Add`
-
-Do the same thing with your text uploader profile and you're done with those two.
-
-#### URL Shortener
-The url shortener is a bit different in terms of how it's setup.
-To set up the URL shortener, use this request url `http:// OR https://[YOUR URL OR IP HERE]/api/shortener`
-
-You wont be needing the file form data name for this one, but go ahead and navigate into the `Headers` tab, and copy the one in the image below
-
-![](https://i.imgur.com/TlbWKJM.png)
-
-Once you're done, you can go ahead and place your profiles down where they're needed
-
-![](https://i.imgur.com/3rVXqmQ.png)
-
-Then lastly, you can use them in your destinations settings
-
-![](https://i.imgur.com/dp5EOWu.png)
+![dest loc](https://qoilo.com/tDFV7n)
 
 ## Credits
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
