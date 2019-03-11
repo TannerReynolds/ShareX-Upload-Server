@@ -5,5 +5,5 @@ if which node > /dev/null
         curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
         sudo apt-get install -y nodejs
 fi
-npm i -g pm2
-npm i
+(cd src && npm i -g pm2)
+(cd src && npm i)

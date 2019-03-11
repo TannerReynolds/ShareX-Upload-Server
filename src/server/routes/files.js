@@ -79,12 +79,12 @@ async function files(req, res) {
                     if(usingUploader === true) {
                         let insecure = `/upload?success=http://${req.headers.host}/${returnedFileName}`
                         let secure = `/upload?success=https://${req.headers.host}/${returnedFileName}`
-                        res.redirect(req.secure ? secure : insecure)
+                        res.redirect(this.c.secure ? secure : insecure)
                         return res.end()
                     } else {
                         let insecure = `http://${req.headers.host}/${returnedFileName}`
                         let secure = `https://${req.headers.host}/${returnedFileName}`
-                        res.write(req.secure ? secure : insecure)
+                        res.write(this.c.secure ? secure : insecure)
                         return res.end()
                     }
                 })
@@ -136,12 +136,12 @@ async function files(req, res) {
                         if(usingUploader === true) {
                             let insecure = `/upload?success=http://${req.headers.host}/${returnedFileName}`
                             let secure = `/upload?success=https://${req.headers.host}/${returnedFileName}`
-                            res.redirect(req.secure ? secure : insecure)
+                            res.redirect(this.c.secure ? secure : insecure)
                             return res.end()
                         } else {
                             let insecure = `http://${req.headers.host}/${returnedFileName}`
                             let secure = `https://${req.headers.host}/${returnedFileName}`
-                            res.write(req.secure ? secure : insecure)
+                            res.write(this.c.secure ? secure : insecure)
                             return res.end()
                         }
                     })

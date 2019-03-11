@@ -4,7 +4,7 @@ let server
 loadConfig().then(() => {
   server = new ShareXAPI(c);
 })
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   server.log.warning('Gracefully exiting..');
   process.exit();
 });

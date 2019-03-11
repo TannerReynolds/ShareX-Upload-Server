@@ -47,7 +47,7 @@ async function paste(req, res) {
                         });
                         let insecure = `http://${req.headers.host}/${fileName}`
                         let secure = `https://${req.headers.host}/${fileName}`
-                        res.write(req.secure ? secure : insecure)
+                        res.write(this.c.secure ? secure : insecure)
                         return res.end()
                     })
                 })
