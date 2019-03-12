@@ -6,12 +6,12 @@
 ## Features
 
 - ### Image/Video/General file uploading
-- ### Text (With [Syntax Highlighting](https://highlightjs.org/))
-- ### URL shortening + a front end for the URL shortener as well
-- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
+- ### Text (With [Syntax Highlighting](https://highlightjs.org/)) [[Example](http://155.138.230.9/SSuaQ)]
+- ### URL shortening + a front end for the URL shortener as well [[Example](http://155.138.230.9/short)]
+- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files [[Example](http://155.138.230.9/5xc9Jk)]
 - ### Logging via a Discord channel
 - ### Server Administration using Discord bot commands
-- ### Front end upload page
+- ### Front end upload page [[Example](http://155.138.230.9/upload)]
 - ### Password protected gallery page (password is admin key)
 
 #### [You can demo the features/server here](http://155.138.230.9/)
