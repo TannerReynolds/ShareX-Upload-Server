@@ -169,12 +169,19 @@ class ShareXAPI {
 
   async startServer() {
     if(this.c.secure) {
-        let privateKey = fs.readFileSync("key.pem");
-        let certificate = fs.readFileSync("cert.pem");
-        https.createServer({
-            key: privateKey,
-            cert: certificate
-        }, this.app).listen(this.c.securePort, "0.0.0.0");
+        if(fs.existsSync(`${__dirname}/key.pem`) && fs.existsSync(`${__dirname}/cert.pem`)) {
+            let privateKey = fs.readFileSync("key.pem");
+            let certificate = fs.readFileSync("cert.pem");
+            https.createServer({
+                key: privateKey,
+                cert: certificate
+            }, this.app).listen(this.c.securePort, "0.0.0.0");
+        } else {
+            // CF Flexible SSL
+            this.app.listen(this.c.securePort, "0.0.0.0", () => {
+                this.log.warning(`Server using flexible SSL secure setting\nTo run a full SSL setting, ensure key.pem and cert.pem are in the /src folder`)
+            })
+        }
         this.log.success(`Secure server listening on port ${this.c.securePort}`)
     } else {
         this.app.listen(this.c.port, "0.0.0.0", () => {
