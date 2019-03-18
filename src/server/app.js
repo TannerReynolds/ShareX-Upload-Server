@@ -169,9 +169,9 @@ class ShareXAPI {
 
   async startServer() {
     if(this.c.secure) {
-        if(fs.existsSync(`${__dirname}/key.pem`) && fs.existsSync(`${__dirname}/cert.pem`)) {
-            let privateKey = fs.readFileSync("key.pem");
-            let certificate = fs.readFileSync("cert.pem");
+        if(fs.existsSync(`${__dirname}/../src/key.pem`) && fs.existsSync(`${__dirname}/../src/cert.pem`)) {
+            let privateKey = fs.readFileSync(`${__dirname}/../src/key.pem`);
+            let certificate = fs.readFileSync(`${__dirname}/../src/cert.pem`);
             https.createServer({
                 key: privateKey,
                 cert: certificate
