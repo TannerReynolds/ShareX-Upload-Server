@@ -24,7 +24,7 @@ async function shortener(req, res) {
         } else {
             let stream = fs.createWriteStream(`${__dirname}/../uploads/${fileName}.html`)
             stream.once("open", fd => {
-                stream.write(`<meta ${protocol}-equiv="refresh" content="0; url=${url}" />`)
+                stream.write(`<meta http-equiv="refresh" content="0; url=${url}" />`)
                 stream.end()
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
                 this.log.verbose(`New Short URL: ${protocol}://${req.headers.host}/${fileName} | IP: ${userIP}`)
