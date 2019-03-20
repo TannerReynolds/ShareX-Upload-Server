@@ -206,6 +206,14 @@ class ShareXAPI {
     let currentYear = date.getFullYear()
     return `${currentMonth}/${currentYear}`
   }
+
+  protocol() {
+    if(this.c.secure) {
+        return "https"
+    } else {
+        return "http"
+    }
+  }
 }
 
 module.exports = ShareXAPI;

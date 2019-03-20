@@ -5,6 +5,7 @@ async function shortener(req, res) {
     let form = new formidable.IncomingForm()
     form.parse(req, (err, fields, files) => {
         let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
+        let protocol = this.protocol()
         if (!this.auth(this.c.key, fields.key, this.c)) {
             res.statusCode = 401
             res.write("Unauthorized");
@@ -23,13 +24,11 @@ async function shortener(req, res) {
         } else {
             let stream = fs.createWriteStream(`${__dirname}/../uploads/${fileName}.html`)
             stream.once("open", fd => {
-                stream.write(`<meta http-equiv="refresh" content="0; url=${url}" />`)
+                stream.write(`<meta ${protocol}-equiv="refresh" content="0; url=${url}" />`)
                 stream.end()
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW][SHORT URL]\n[URL](${url})\n[NEW](${req.headers.host}/${fileName})\n[IP](${userIP})\n\`\`\``)
-                this.log.verbose(`New Short URL: http://${req.headers.host}/${fileName} | IP: ${userIP}`)
-                let insecure = `http://${req.headers.host}/${fileName}`
-                let secure = `https://${req.headers.host}/${fileName}`
-                res.write(this.c.secure ? secure : insecure)
+                this.log.verbose(`New Short URL: ${protocol}://${req.headers.host}/${fileName} | IP: ${userIP}`)
+                res.write(`${protocol}://${req.headers.host}/${fileName}`)
                 this.db.get("files")
                     .push({path: `/${fileName}`, ip: userIP, views: 0})
                     .write();

@@ -12,6 +12,7 @@ async function files(req, res) {
     res.setHeader("Content-Type", "text/text")
     let fileName = this.randomToken(6) // 56,800,235,584 possible file names
     let form = new formidable.IncomingForm()
+    let protocol = this.protocol()
     form.parse(req, (err, fields, files) => {
         let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
         let usingUploader = false
@@ -51,7 +52,7 @@ async function files(req, res) {
                     res.redirect("/upload?error=File_Too_Big")
                     return res.end()
                 } else {
-                    res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
+                    res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`)
                     return res.end()
                 }
             } else {
@@ -73,18 +74,14 @@ async function files(req, res) {
                             })
                         })
                     }
-                    if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\nhttp://${req.headers.host}/${returnedFileName}`)
+                    if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][ADMIN]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`)
                     if (err) return res.write(err)
-                    this.log.verbose(`New File Upload: http://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
+                    this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
                     if(usingUploader === true) {
-                        let insecure = `/upload?success=http://${req.headers.host}/${returnedFileName}`
-                        let secure = `/upload?success=https://${req.headers.host}/${returnedFileName}`
-                        res.redirect(this.c.secure ? secure : insecure)
+                        res.redirect(`/upload?success=${protocol}://${req.headers.host}/${returnedFileName}`)
                         return res.end()
                     } else {
-                        let insecure = `http://${req.headers.host}/${returnedFileName}`
-                        let secure = `https://${req.headers.host}/${returnedFileName}`
-                        res.write(this.c.secure ? secure : insecure)
+                        res.write(`${protocol}://${req.headers.host}/${returnedFileName}`)
                         return res.end()
                     }
                 })
@@ -97,7 +94,7 @@ async function files(req, res) {
                     res.redirect("/upload?error=File_Too_Big")
                     return res.end()
                 } else {
-                    res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
+                    res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`)
                     return res.end()
                 }
             } else {
@@ -108,7 +105,7 @@ async function files(req, res) {
                         res.redirect("/upload?error=Illegal_File_Type")
                         return res.end()
                     } else {
-                        res.write(`http://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`)
+                        res.write(`${protocol}://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`)
                         return res.end()
                     }
                 } else {
@@ -130,18 +127,14 @@ async function files(req, res) {
                                 })
                             })
                         }
-                        if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\nhttp://${req.headers.host}/${returnedFileName}`)
+                        if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`)
                         if (err) return res.write(err)
-                        this.log.verbose(`New File Upload: http://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
+                        this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
                         if(usingUploader === true) {
-                            let insecure = `/upload?success=http://${req.headers.host}/${returnedFileName}`
-                            let secure = `/upload?success=https://${req.headers.host}/${returnedFileName}`
-                            res.redirect(this.c.secure ? secure : insecure)
+                            res.redirect(`/upload?success=${protocol}://${req.headers.host}/${returnedFileName}`)
                             return res.end()
                         } else {
-                            let insecure = `http://${req.headers.host}/${returnedFileName}`
-                            let secure = `https://${req.headers.host}/${returnedFileName}`
-                            res.write(this.c.secure ? secure : insecure)
+                            res.write(`${protocol}://${req.headers.host}/${returnedFileName}`)
                             return res.end()
                         }
                     })

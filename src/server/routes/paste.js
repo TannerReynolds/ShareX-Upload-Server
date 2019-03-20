@@ -6,6 +6,7 @@ async function paste(req, res) {
     res.setHeader("Content-Type", "text/text")
     let fileName = this.randomToken(5) // 916,132,832 possible file names
     let form = new formidable.IncomingForm()
+    let protocol = this.protocol()
     form.parse(req, (err, fields, files) => {
         let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
         if (!this.auth(this.c.key, fields.key, this.c)) {
@@ -26,7 +27,7 @@ async function paste(req, res) {
         if (Math.round((files.fdata.size / 1024) / 1000) > this.c.paste.max_upload_size) {
             if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED PASTE][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
             res.statusCode = 413
-            res.write(`http://${req.headers.host}/ERR_FILE_TOO_BIG`)
+            res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`)
             return res.end()
         } else {
             fs.move(oldpath, newpath, err => {
@@ -45,9 +46,7 @@ async function paste(req, res) {
                         fs.unlink(newpath, err => {
                             if (err) return
                         });
-                        let insecure = `http://${req.headers.host}/${fileName}`
-                        let secure = `https://${req.headers.host}/${fileName}`
-                        res.write(this.c.secure ? secure : insecure)
+                        res.write(`${protocol}://${req.headers.host}/${fileName}`)
                         return res.end()
                     })
                 })
