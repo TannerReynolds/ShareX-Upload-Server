@@ -51,6 +51,7 @@ async function paste(req, res) {
                     })
                 })
             })
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW PASTE][USER]\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${fileName}`)
         }
     })
 }
