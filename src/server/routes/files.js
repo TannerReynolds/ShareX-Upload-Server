@@ -28,7 +28,7 @@ async function files(req, res) {
         } else if(!this.auth(this.c.key, fields.password, this.c) && usingUploader === true) {
             this.log.warning(this.auth(this.c.key, fields.password, this.c))
             res.statusCode = 401
-            res.redirect("/upload?error=Incorrect_Password")
+            res.redirect("/?error=Incorrect_Password")
             res.end()
             return this.log.warning(`Unauthorized User | File Upload | ${userIP}`)
         }
@@ -49,7 +49,7 @@ async function files(req, res) {
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][ADMIN]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
                 res.statusCode = 413
                 if(usingUploader === true) {
-                    res.redirect("/upload?error=File_Too_Big")
+                    res.redirect("/?error=File_Too_Big")
                     return res.end()
                 } else {
                     res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`)
@@ -69,7 +69,7 @@ async function files(req, res) {
                                 })
                                 stream.end()
                                 fs.unlink(newpath, err => {
-                                    if (err) return this.log.error(err)
+                                    if (err) return this.log.warning(err)
                                 });
                             })
                         })
@@ -78,7 +78,7 @@ async function files(req, res) {
                     if (err) return res.write(err)
                     this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
                     if(usingUploader === true) {
-                        res.redirect(`/upload?success=${protocol}://${req.headers.host}/${returnedFileName}`)
+                        res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`)
                         return res.end()
                     } else {
                         res.write(`${protocol}://${req.headers.host}/${returnedFileName}`)
@@ -91,7 +91,7 @@ async function files(req, res) {
                 if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size/1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``)
                 res.statusCode = 413
                 if(usingUploader === true) {
-                    res.redirect("/upload?error=File_Too_Big")
+                    res.redirect("/?error=File_Too_Big")
                     return res.end()
                 } else {
                     res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`)
@@ -102,7 +102,7 @@ async function files(req, res) {
                     if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``)
                     res.statusCode = 415
                     if(usingUploader === true) {
-                        res.redirect("/upload?error=Illegal_File_Type")
+                        res.redirect("/?error=Illegal_File_Type")
                         return res.end()
                     } else {
                         res.write(`${protocol}://${req.headers.host}/ERR_ILLEGAL_FILE_TYPE`)
@@ -122,7 +122,7 @@ async function files(req, res) {
                                     })
                                     stream.end()
                                     fs.unlink(newpath, err => {
-                                        if (err) return this.log.error(err)
+                                        if (err) return this.log.warning(err)
                                     });
                                 })
                             })
@@ -131,7 +131,7 @@ async function files(req, res) {
                         if (err) return res.write(err)
                         this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP}`)
                         if(usingUploader === true) {
-                            res.redirect(`/upload?success=${protocol}://${req.headers.host}/${returnedFileName}`)
+                            res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`)
                             return res.end()
                         } else {
                             res.write(`${protocol}://${req.headers.host}/${returnedFileName}`)

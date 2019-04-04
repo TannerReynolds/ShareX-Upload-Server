@@ -128,7 +128,7 @@ class ShareXAPI {
     this.app.use(express.static(`${__dirname}/views/`, {
         extensions: ["css"],
     }))
-    this.app.get("/", routes.main.bind(this))
+    this.app.get("/", routes.upload.bind(this))
     this.app.get("/gallery", routes.gallery.get.bind(this))
     this.app.get("/short", routes.short.get.bind(this))
     this.app.get("/upload", routes.upload.bind(this))

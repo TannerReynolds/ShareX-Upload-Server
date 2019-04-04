@@ -1,42 +1,37 @@
 const fg = {
-    black: "\x1b[30m%s\x1b[0m",
-    red: "\x1b[31m%s\x1b[0m",
-    green: "\x1b[32m%s\x1b[0m",
-    yellow: "\x1b[33m%s\x1b[0m",
-    blue: "\x1b[34m%s\x1b[0m",
-    magenta: "\x1b[35m%s\x1b[0m",
-    cyan: "\x1b[36m%s\x1b[0m",
-    white: "\x1b[37m%s\x1b[0m"
+    black: "\x1b[30m",
+    red: "\x1b[31m",
+    green: "\x1b[32m",
+    yellow: "\x1b[33m",
+    blue: "\x1b[34m",
+    magenta: "\x1b[35m",
+    cyan: "\x1b[36m",
+    white: "\x1b[37m"
 }
 const bg = {
-    black: "\x1b[40m%s\x1b[0m",
-    red: "\x1b[41m%s\x1b[0m",
-    green: "\x1b[42m%s\x1b[0m",
-    yellow: "\x1b[43m%s\x1b[0m",
-    blue: "\x1b[44m%s\x1b[0m",
-    magenta: "\x1b[45m%s\x1b[0m",
-    cyan: "\x1b[46m%s\x1b[0m",
-    white: "\x1b[47m%s\x1b[0m"
+    black: "\x1b[40m",
+    red: "\x1b[41m",
+    green: "\x1b[42m",
+    yellow: "\x1b[43m",
+    blue: "\x1b[44m",
+    magenta: "\x1b[45m",
+    cyan: "\x1b[46m",
+    white: "\x1b[47m"
 }
-async function uncaughtError(error) {
-    console.log(bg.red, `[${timestamp()}] | Uncaught Error`)
-    console.log(fg.red, error)
+const endColor = "\x1b[0m"
+async function uncaughtError(log) {
+    console.log(`${fg.red}  |> ${endColor}${bg.red}[${timestamp()}]${endColor}${fg.red} | ${log}${endColor}`)
 }
 async function success(log) {
-    console.log(fg.green, `[${timestamp()}] | ${log}`)
+    console.log(`${fg.red}  |> ${endColor}${bg.green}[${timestamp()}]${endColor}${fg.green} | ${log}${endColor}`)
 }
-async function error(error) {
-    console.log(bg.red, `[${timestamp()}] | Error`)
-    console.log(fg.red, error)
-    console.trace("\x1b[31mError\x1b[0m")
-}
-async function warning(warning) {
-    console.log(fg.magenta, `[${timestamp()}] | ${warning}`)
+async function warning(log) {
+    console.log(`${fg.red}  |> ${endColor}${bg.magenta}[${timestamp()}]${endColor}${fg.magenta} | ${log}${endColor}`)
 }
 async function verbose(log) {
-    console.log(fg.blue, `[${timestamp()}] | ${log}`)
+    console.log(`${fg.red}  |> ${endColor}${bg.blue}[${timestamp()}]${endColor}${fg.blue} | ${log}${endColor}`)
 }
-module.exports = { uncaughtError, success, error, warning, verbose }
+module.exports = { uncaughtError, success, warning, verbose }
 
 function timestamp() {
     let time = new Date();
