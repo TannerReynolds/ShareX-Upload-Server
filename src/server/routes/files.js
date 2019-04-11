@@ -10,7 +10,7 @@ const md = new Remarkable("full", {
 })
 async function files(req, res) {
     res.setHeader("Content-Type", "text/text")
-    let fileName = this.randomToken(6) // 56,800,235,584 possible file names
+    let fileName = this.randomToken(this.c.fileNameLength) // 56,800,235,584 possible file names
     let form = new formidable.IncomingForm()
     let protocol = this.protocol()
     form.parse(req, (err, fields, files) => {
