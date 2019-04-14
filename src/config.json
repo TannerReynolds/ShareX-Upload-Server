@@ -5,6 +5,8 @@
   "markdown": true,
   "port": 80,
   "secure": true,
+  "fileNameLength": 4,
+  "shortUrlLength": 3,
   "securePort": 443,
   "ratelimit": 1000,
   "allowed":[
