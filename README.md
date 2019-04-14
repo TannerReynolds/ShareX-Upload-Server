@@ -96,5 +96,7 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
 #### [Aetheryx](https://github.com/aetheryx) - Webserver Structure
 #### [Jaex](https://github.com/Jaex) - ShareX
+#### [FancyApps](https://github.com/fancyapps/fancybox) - Gallery lightbox script for displaying images, videos and more
+
 
 ### <a href="https://qoilo.com/hosting"><img src="https://qoilo.com/eWBpJt" width="26px">  Cheap Hosting Options For Your Uploader</a>
