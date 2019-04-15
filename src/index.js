@@ -1,4 +1,5 @@
 const ShareXAPI = require(`${__dirname}/server/app`);
+/** Setting definitions for the config file and server class */
 let c
 let server
 console.log(`\x1b[31m
@@ -17,13 +18,17 @@ console.log(`\x1b[31m
   |\x1b[0m\x1b[32m  Creator: github.com/TannerReynolds\x1b[0m\x1b[31m                                |
   |\x1b[0m\x1b[32m  Discord: https://discord.gg/QTcU89d\x1b[0m\x1b[31m                               |
   ======================================================================\x1b[0m`)
+
 loadConfig().then(() => {
+  /** Starting server using the selected config file */
   server = new ShareXAPI(c);
 })
 process.on("SIGINT", async () => {
   server.log.warning('Gracefully exiting..');
   process.exit();
 });
+
+/** Determines whether or not to use the test config or not. Test env config does not get pushed to git */
 async function loadConfig() {
   process.argv[2] === "-test" 
       ? c = require(`${__dirname}/config.real.json`)

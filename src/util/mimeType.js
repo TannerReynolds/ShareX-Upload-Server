@@ -1,3 +1,8 @@
+/**
+ * Takes a file extension and returns it's MIME type
+ * @param {string} fileName - file name including extension (example.pdf)
+ * @returns {string} MIME Type
+ */
 function mimeType(fileName){
 	let mimeTypes = {
 		'.3dm': 'x-world/x-3dmf'

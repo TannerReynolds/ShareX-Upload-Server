@@ -1,3 +1,7 @@
+/** Used to generate file names
+ * @param {number} number - Number of characters the file name should be
+ * @returns {string} String containing file name
+ */
 function randomToken(number) {
     number = parseInt(number)
     let text = ""

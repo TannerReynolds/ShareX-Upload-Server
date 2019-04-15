@@ -1,3 +1,4 @@
+/** Colors to display in terminal */
 const fg = {
     black: "\x1b[30m",
     red: "\x1b[31m",
@@ -19,6 +20,12 @@ const bg = {
     white: "\x1b[47m"
 }
 const endColor = "\x1b[0m"
+
+/**
+ * Logs to console with proper styling and a timestamp
+ * @param {string} log - string you want to log
+ * @returns {Promise}
+ */
 async function uncaughtError(log) {
     console.log(`${fg.red}  |> ${endColor}${bg.red}[${timestamp()}]${endColor}${fg.red} | ${log}${endColor}`)
 }
@@ -33,6 +40,10 @@ async function verbose(log) {
 }
 module.exports = { uncaughtError, success, warning, verbose }
 
+/**
+ * Timestamp generation
+ * @returns {string} [11:05:49 PM]
+ */
 function timestamp() {
     let time = new Date();
     return time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
