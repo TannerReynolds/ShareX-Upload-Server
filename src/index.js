@@ -28,7 +28,9 @@ process.on("SIGINT", async () => {
   process.exit();
 });
 
-/** Determines whether or not to use the test config or not. Test env config does not get pushed to git */
+/** Determines whether or not to use the test config or not. Test env config does not get pushed to git
+ * @returns {void}
+ */
 async function loadConfig() {
   process.argv[2] === "-test" 
       ? c = require(`${__dirname}/config.real.json`)

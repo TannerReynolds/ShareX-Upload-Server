@@ -15,11 +15,18 @@ const adapter = new FileSync("db.json")
 const db = low(adapter)
 const helmet = require("helmet")
 
+/** Express Webserver Class */
 class ShareXAPI {
+  /**
+   * Starting server and bot, handling routing, and middleware
+   * @param {object} c - configuration json file
+   */
   constructor (c) {
     this.db = db
+    /** Setting LowDB Defaults */
     db.defaults({ files: [], bans: [], visitors: [], trafficTotal: [], passwordUploads: [], })
       .write();
+    /** Defintions */
     this.utils = utils
     this.log = utils.log
     this.auth = utils.auth
@@ -40,10 +47,11 @@ class ShareXAPI {
     this.app.use(bodyParser.urlencoded({
         extended: true
     }));
+    /** Checking to see if IP is banned */
     this.app.use((req, res, next) => {
         let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
         let exists = this.db.get("bans").find({ip: userIP}).value();
-        if(exists === undefined) {
+        if(exists === undefined) { // if a ban was not found, then it will move on
             next()
         } else {
             res.statusCode = 401
@@ -51,6 +59,7 @@ class ShareXAPI {
             return res.end();
         }
     })
+    /** Set to place IPs in temporarily for ratelimiting uploads */
     let ratelimited = new Set()
     this.app.use((req, res, next) => {
         if(req.method === "POST") {
@@ -60,39 +69,41 @@ class ShareXAPI {
                 res.write("Error 429: Ratelimited")
                 return res.end()
             } else {
-                next()
+                next() // Move on if IP is not in ratelimited set
                 ratelimited.add(userIP)
-                setTimeout(() => ratelimited.delete(userIP), c.ratelimit)
+                setTimeout(() => ratelimited.delete(userIP), c.ratelimit) // delete IP from ratelimit set after time specified in config.json
             }
         } else {
-            next()
+            next() // move on if request type is not POST
         }
     })
     this.app.use((req, res, next) => {
         if(req.method === "GET") {
             let userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
             let file = req.path
+            // Not ignoring these files causes bloat in the db
             let ignored = ["/favicon.ico", "/assets/css/styles.min.css", "/highlight.pack.js", "/highlightjs-line-numbers.min.js", "/paste.css", "/atom-one-dark.css"]
             let exists = this.db.get("files").find({path: file}).value();
-            if(ignored.includes(file)) exists = true
+            if(ignored.includes(file)) exists = true // making sure ignored files aren't included
             if(exists === undefined) {
-                next()
+                next() // Move on if it doesn't exist, then input data into db
                 this.db.get("files")
                     .push({path: file, ip: "Unknown", views: 0})
-                    .write();
+                    .write(); // Set IP to unknown in case a file is visited, and not uploaded using /api/files
                 if(!ignored.includes(file)) {
                     this.db.get("visitors")
                         .push({date: new Date(), ip: userIP, path: file})
-                        .write();
+                        .write(); // Sets correct information for files uploaded with /api/files
                 }
             } else {
-                next()
-                let trafficPeriod = this.trafficPeriod()
+                next() // Move on if the file already exists
+                let trafficPeriod = this.trafficPeriod() // Gets month and year for tracking
                 let viewCount
                 let trafficCount
-                let filesExist = this.db.get("files").find({path: file}).value()
-                let trafficExists = this.db.get("trafficTotal").find({month: trafficPeriod}).value()
+                let filesExist = this.db.get("files").find({path: file}).value() // traffic exists for this file
+                let trafficExists = this.db.get("trafficTotal").find({month: trafficPeriod}).value() // traffic exists for this month and year
                 let visitors = this.db.get("visitors").value()
+                // Resetting visitors in the DB every 100 requests so the DB doesn't get bloated
                 if(visitors.length > 100) {
                     this.db.set("visitors", [])
                     .write();
@@ -106,29 +117,32 @@ class ShareXAPI {
                 this.db.get("files")
                     .find({path: file})
                     .assign({views: viewCount})
-                    .write();
+                    .write(); // Setting viewcount for file
                 if(!ignored.includes(file)) {
                     this.db.get("visitors")
                         .push({date: new Date(), ip: userIP, path: file})
-                        .write();
+                        .write(); // Adding vsitor information to DB
                 }
                 if(!ignored.includes(file)) {
                     this.db.get("trafficTotal")
                         .find({month: trafficPeriod})
                         .assign({total: trafficCount})
-                        .write();
+                        .write(); // if request isn't to an ignored file, take request into total traffic
                 }
             }
         } else {
             next()
         }
     })
+    // All files in /uploads/ are publicly accessible via http
     this.app.use(express.static(`${__dirname}/uploads/`, {
         extensions: this.c.admin.allowed
     }))
     this.app.use(express.static(`${__dirname}/views/`, {
         extensions: ["css"],
     }))
+
+    // routing
     this.app.get("/", routes.upload.bind(this))
     this.app.get("/gallery", routes.gallery.get.bind(this))
     this.app.get("/short", routes.short.get.bind(this))
@@ -142,6 +156,8 @@ class ShareXAPI {
     this.app.post("/pupload", routes.pupload.bind(this))
     this.app.post("/api/paste", routes.paste.bind(this))
     this.app.post("/api/files", routes.files.bind(this))
+
+    // Begin server
     this.startServer()
 }
 
