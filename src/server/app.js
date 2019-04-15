@@ -161,6 +161,9 @@ class ShareXAPI {
     this.startServer()
 }
 
+  /** Booting up the Discord Bot
+   * @returns {void}
+   */
   async runDiscordBot() {
     this.bot = new Eris(this.c.discordToken, {
         maxShards: "auto"
@@ -174,8 +177,13 @@ class ShareXAPI {
     this.bot.connect()
   }
 
+  /** Loads the commands for the discord bot to use in /bot/commands
+   * into an array defined before the calling of this function
+   * @returns {void}
+   */
   async loadCommands() {
     fs.readdir(`${__dirname}/../bot/commands`, (err, files) => {
+        /** Commands are pushed to an array */
         files.forEach(file => {
             if (file.toString().includes(".js")) {
                 this.commands.push(require(`${__dirname}/../bot/commands/${file.toString()}`))
@@ -185,8 +193,15 @@ class ShareXAPI {
     })
   }
 
+  /** Start's the Express server
+   * @returns {void}
+   */
   async startServer() {
-    if(this.c.secure) {
+    if(this.c.secure) { 
+        /** if the secure option is set to true in config, 
+         *  it will boot in https so long as it detects 
+         *  key.pem and cert.pem in the src directory
+         */
         if(fs.existsSync(`${__dirname}/../key.pem`) && fs.existsSync(`${__dirname}/../cert.pem`)) {
             let privateKey = fs.readFileSync(`${__dirname}/../key.pem`);
             let certificate = fs.readFileSync(`${__dirname}/../cert.pem`);
@@ -196,6 +211,10 @@ class ShareXAPI {
             }, this.app).listen(this.c.securePort, "0.0.0.0");
         } else {
             // CF Flexible SSL
+            /** if no key & cert pem files are detected, 
+             * it will still run in secure mode (returning urls with https)
+             * so that it's compatible with CF flexible SSL
+             * and SSL configurations via a reverse proxy */
             this.app.listen(this.c.securePort, "0.0.0.0", () => {
                 this.log.warning(`Server using flexible SSL secure setting\nTo run a full SSL setting, ensure key.pem and cert.pem are in the /src folder`)
             })
@@ -208,6 +227,11 @@ class ShareXAPI {
     }
   }
 
+  /** Checks to see if any DB entry is available for this month and year
+   * Then inserts a new object into the array if no data is available for
+   * that month/year
+   * @returns {void}
+   */
   async checkMonth() {
       let trafficPeriod = this.trafficPeriod()
       let dbMonth = this.db.get("trafficTotal").find({month: trafficPeriod}).value()
@@ -218,6 +242,12 @@ class ShareXAPI {
       }
   }
 
+  /** Gets the current month, and the current year
+   * then combines the two into a string
+   * this string is inserted into the database to be used
+   * for collecting traffic data on a per month basis
+   * @returns {string} 4/2019
+   */
   trafficPeriod() {
     let date = new Date()
     let currentMonth = date.getMonth() + 1
@@ -225,6 +255,11 @@ class ShareXAPI {
     return `${currentMonth}/${currentYear}`
   }
 
+  /** Checks to see if server administrator wants to return http or https
+   * Using this function instead of req.secure because of
+   * Certain possible SSL configurations (CF Flexible SSL)
+   * @returns {string} http OR https
+   */
   protocol() {
     if(this.c.secure) {
         return "https"
