@@ -18,12 +18,13 @@ const helmet = require("helmet")
 class ShareXAPI {
   constructor (c) {
     this.db = db
-    db.defaults({ files: [], bans: [], visitors: [], trafficTotal: [] })
+    db.defaults({ files: [], bans: [], visitors: [], trafficTotal: [], passwordUploads: [], })
       .write();
     this.utils = utils
     this.log = utils.log
     this.auth = utils.auth
     this.randomToken = utils.randomToken
+    this.mimeType = utils.mimeType
     this.c = c;
     this.monitorChannel = null
     this.checkMonth()
@@ -138,6 +139,7 @@ class ShareXAPI {
     this.app.post("/api/shortener", routes.shortener.bind(this))
     this.app.post("/short", routes.short.post.bind(this))
     this.app.post("/gallery", routes.gallery.post.bind(this))
+    this.app.post("/pupload", routes.pupload.bind(this))
     this.app.post("/api/paste", routes.paste.bind(this))
     this.app.post("/api/files", routes.files.bind(this))
     this.startServer()
