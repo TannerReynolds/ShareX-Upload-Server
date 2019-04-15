@@ -10,6 +10,7 @@
 - ### URL shortening + a front end for the URL shortener as well [[Example](http://155.138.230.9/short)]
 - ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files [[Example](http://155.138.230.9/5xc9Jk)]
 - ### Logging via a Discord channel
+- ### Password protected uploading
 - ### Server Administration using Discord bot commands
 - ### Front end upload page [[Example](http://155.138.230.9/upload)]
 - ### Password protected gallery page (password is admin key)
@@ -91,6 +92,13 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
  - Change `Destination Location`
 
 ![dest loc](https://qoilo.com/tDFV7n)
+
+### Configuring for Password Protected Uploading
+- Add a field to your body called `pupload`, and then make the value whatever you want the password to be
+![pupload1](https://qoilo.com/DE0mbH)
+- Upload something, and the upload will give you a url to the authentication page
+![pupload2](https://qoilo.com/yAORwr)
+- Type in your password, and it will display/download the file!
 
 ## Credits
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
