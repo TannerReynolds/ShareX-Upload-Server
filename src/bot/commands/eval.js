@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable global-require */
 /* eslint-disable no-extend-native */
 /* eslint-disable no-eval */
