@@ -22,6 +22,7 @@
         "max-len": "off",
         "consistent-return": 0,
         "no-plusplus": "off",
-        "array-callback-return": "off"
+        "array-callback-return": "off",
+        "import/no-unresolved": "off"
     }
 }
