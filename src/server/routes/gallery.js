@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 
-async function get(req, res) {
+async function get(_req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.render('galleryLogin');
     res.end();

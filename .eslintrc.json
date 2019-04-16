@@ -20,6 +20,8 @@
         "indent": ["error", 4],
         "arrow-parens": 0,
         "max-len": "off",
-        "consistent-return": 0
+        "consistent-return": 0,
+        "no-plusplus": "off",
+        "array-callback-return": "off"
     }
 }
