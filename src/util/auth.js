@@ -1,9 +1,8 @@
 function auth(myKey, givenKey, c) {
-    if(c.public === true) return true
-    if (myKey !== null && myKey && myKey !== undefined && givenKey !== myKey && givenKey !== c.admin.key) {
-        return false
-    } else {
-        return true
+    if (c.public === true) return true;
+    if (myKey !== null && givenKey !== myKey && givenKey !== c.admin.key) {
+        return false;
     }
+    return true;
 }
-module.exports = auth
+module.exports = auth;
