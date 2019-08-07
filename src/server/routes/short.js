@@ -2,12 +2,18 @@ const fs = require('fs-extra');
 
 async function get(req, res) {
     res.setHeader('Content-Type', 'text/html');
-    res.render('short');
+    res.render('short', { public: this.c.public });
     res.end();
 }
 async function post(req, res) {
     const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     res.setHeader('Content-Type', 'text/text');
+    if (!this.auth(this.c.key, req.body.password, this.c) && !this.c.public) {
+        res.statusCode = 401;
+        res.redirect('/short?error=Incorrect_Password');
+        res.end();
+        return this.log.warning(`Unauthorized User | URL Shorten | ${userIP}`);
+    }
     const protocol = this.protocol();
     const fileName = this.randomToken(this.c.shortUrlLength);
     if (req.body.URL === '' || req.body.URL === null) {
