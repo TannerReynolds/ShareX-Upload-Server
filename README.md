@@ -71,8 +71,8 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
 ## Configuring Your ShareX Client
  - [Download this repository to the PC your ShareX is on](https://github.com/TannerReynolds/ShareX-Custom-Upload-Server/archive/master.zip)
  - Navigate to `Destinations -> Custom Uploader Settings`
- - Import the sxcu files from the downloaded zip one by one `->`
- - Properly Configure Template `->`
+ - Import the sxcu files from the downloaded zip one by one
+ - Properly Configure Template
  
  ![template](https://qoilo.com/W513)
  
