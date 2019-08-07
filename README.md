@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://qoilo.com/8yh8I9.gif">
+  <img src="https://qoilo.com/Xaty.gif">
 </p>
 
 # Nodejs ShareX Server
@@ -72,32 +72,15 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
  - [Download this repository to the PC your ShareX is on](https://github.com/TannerReynolds/ShareX-Custom-Upload-Server/archive/master.zip)
  - Navigate to `Destinations -> Custom Uploader Settings`
  - Import the sxcu files from the downloaded zip one by one `->`
-  
-  ![Import From File](https://qoilo.com/Ho38au)
-  
-  ![Importing File](https://qoilo.com/f3BN0R)
-  
  - Properly Configure Template `->`
  
- ![template](https://qoilo.com/ZKEdQn)
- 
- **Purple**: `http` or `https`. If your server's `secure` setting is set to `true` then use https.
- 
- **Green**: Your domain goes here along with any subdomain you may use. Example: `i.qoilo.com`
- 
- **Red**: Password goes here. if your `public` setting is set to `true`, dont worry about this.
- 
- **Yellow**: Ensure each field is using the correct setting
+ ![template](https://qoilo.com/W513)
  
  - Change `Destination Location`
 
-![dest loc](https://qoilo.com/tDFV7n)
-
 ### Configuring for Password Protected Uploading
 - Add a field to your body called `pupload`, and then make the value whatever you want the password to be
-![pupload1](https://qoilo.com/DE0mbH)
 - Upload something, and the upload will give you a url to the authentication page
-![pupload2](https://qoilo.com/yAORwr)
 - Type in your password, and it will display/download the file!
 
 ## Credits
@@ -107,4 +90,4 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
 #### [FancyApps](https://github.com/fancyapps/fancybox) - Gallery lightbox script for displaying images, videos and more
 
 
-### <a href="https://qoilo.com/hosting"><img src="https://qoilo.com/eWBpJt" width="26px">  Cheap Hosting Options For Your Uploader</a>
+#### <a href="https://qoilo.com/hosting">Cheap Hosting Options For Your Uploader</a>
