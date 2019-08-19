@@ -2,7 +2,7 @@
   <img src="https://qoilo.com/Xaty.gif">
 </p>
 
-# Nodejs ShareX Server
+# ShareS - A Nodejs ShareX Upload Server
 ## Features
 
 - ### Image/Video/General file uploading
