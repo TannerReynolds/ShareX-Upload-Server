@@ -64,6 +64,16 @@ You must fill this out for the webserver to work properly. Below explains the co
 Once you've properly configured your server, you can run `node index.js` in the src folder to start the server.
 You can keep your server running forever if you use a process manager, like pm2. pm2 installs along with your server if you used the install.sh script to install your server. Otherwise you can run `npm i -g pm2` to install pm2. Then you can run your server by running `pm2 start index.js`, and monitor logs and such using `pm2 monit`
 
+### Note: Nginx/reverse proxy users
+If you're configuring this webserver to run through an Nginx reverse proxy, make sure you add these lines to your reverse proxy config
+```
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection 'upgrade';
+proxy_set_header Host $host;
+proxy_cache_bypass $http_upgrade;
+```
+This is generally some things you want to add to your config, and is what's actually required for SUS to work properly. This is because SUS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running SUS through a reverse proxy, unless you're passing along the original headers, SUS is most likely just going to send you something like `http://[your real ip address]/[filename]`
+
 ## Setting up Discord logging
 if you wish to log your webserver's activity in a Discord channel for whatever reason, you can.
 [Here is information on how to setup a bot account and get the information needed for Discord logging](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
