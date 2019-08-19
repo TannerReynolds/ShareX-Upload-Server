@@ -72,7 +72,7 @@ proxy_set_header Connection 'upgrade';
 proxy_set_header Host $host;
 proxy_cache_bypass $http_upgrade;
 ```
-This is generally some things you want to add to your config, and is what's actually required for SUS to work properly. This is because SUS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running SUS through a reverse proxy, unless you're passing along the *original* headers, SUS is most likely just going to send you something like `http://[your real ip address]/[filename]`
+This is generally some things you want to add to your config, and is what's actually required for SUS to work properly. This is because SUS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running SUS through a reverse proxy, unless you're passing along the *original* headers, SUS is most likely just going to send you something like `http://[server's real ip address]/[filename]`
 
 ## Setting up Discord logging
 if you wish to log your webserver's activity in a Discord channel for whatever reason, you can.
