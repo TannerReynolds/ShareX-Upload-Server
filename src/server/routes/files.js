@@ -11,7 +11,7 @@ const md = new Remarkable('full', {
 });
 async function files(req, res) {
     res.setHeader('Content-Type', 'text/text');
-    const fileName = this.randomToken(this.c.fileNameLength); // 56,800,235,584 possible file names
+    const fileName = this.randomToken(this.c.fileNameLength, false); // 56,800,235,584 possible file names
     const form = new formidable.IncomingForm();
     const protocol = this.protocol();
     // eslint-disable-next-line no-shadow
@@ -79,8 +79,14 @@ async function files(req, res) {
             return res.end();
         }
         if (fields.pupload) {
+            let altKey = this.randomToken(this.c.puploadKeyGenLength, true);
             fs.move(oldpath, newpath, () => {
-                const puploadKey = fields.pupload;
+                let puploadKey
+                if(fields.pupload === '*random*') {
+                    puploadKey = altKey;
+                } else {
+                    puploadKey = fields.pupload;
+                }
                 this.db.get('passwordUploads')
                     .push({
                         fileName: `${fileName}.${fileExt}`,
@@ -106,7 +112,7 @@ async function files(req, res) {
                 res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`);
                 return res.end();
             }
-            res.write(`${protocol}://${req.headers.host}/${returnedFileName}`);
+            fields.pupload === '*random*' ? res.write(`URL: ${protocol}://${req.headers.host}/${returnedFileName} | KEY: ${altKey}`) : res.write(`${protocol}://${req.headers.host}/${returnedFileName}`);
             return res.end();
         }
         fs.move(oldpath, newpath, () => {
