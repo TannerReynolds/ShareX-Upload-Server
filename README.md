@@ -33,6 +33,7 @@ You must fill this out for the webserver to work properly. Below explains the co
 ```js
 {
   "key": "", // Password for private uploading
+  "puploadKeyGenLength: 64, // Amount of characters server should use for pupload files
   "public": false, // Disables auth and does not render a password field for /upload
   "maxUploadSize": 50, // max upload size for non-admins using regular key in MB
   "markdown": true, // enables markdown rendering (upload whole .md file for render)
@@ -92,6 +93,9 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
 - Add a field to your body called `pupload`, and then make the value whatever you want the password to be
 - Upload something, and the upload will give you a url to the authentication page
 - Type in your password, and it will display/download the file!
+
+#### Auto Password Generation
+In addition to being able to use any password you want for puploads, if you type in `*random*` as your pupload field, the server will automatically generate a password for you. This password will include letters, numbers, and special characters. It will generate a key based on the length you specify in your config (puploadKeyGenLength). When making requests, the server will return the image URL with the key like so `URL: https://qoilo.com/lhHr | KEY: Np$[CBk>X[c^YY{MDlCHH0|Qfm1uK0*lld^Mi$f4d62R5x6C2>~yaL}3*QYnziuZ`
 
 ## Credits
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
