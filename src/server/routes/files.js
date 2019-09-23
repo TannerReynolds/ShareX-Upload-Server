@@ -3,6 +3,7 @@ const formidable = require('formidable');
 const fs = require('fs-extra');
 const Remarkable = require('remarkable');
 const ejs = require('ejs');
+const exif = require('exif2');
 
 const md = new Remarkable('full', {
     html: false,
@@ -47,11 +48,20 @@ async function files(req, res) {
         } else {
             returnedFileName = fileName;
         }
+        if(fields.showCase) {
+            fields.showCase = true
+        }
+        let showCaseFile;
+        if(fields.showCase !== false) {
+            showCaseFile = this.randomToken(this.c.fileNameLength, false);
+        }
         this.db.get('files')
             .push({
-                path: `/${returnedFileName}`,
+                path: fields.showCase ? `/${showCaseFile}` : `/${returnedFileName}`,
                 ip: userIP,
                 views: 0,
+                original: newpath,
+                showCase: fields.showCase ? true : false
             })
             .write();
         let settings;
@@ -114,6 +124,56 @@ async function files(req, res) {
             }
             fields.pupload === '*random*' ? res.write(`URL: ${protocol}://${req.headers.host}/${returnedFileName} | KEY: ${altKey}`) : res.write(`${protocol}://${req.headers.host}/${returnedFileName}`);
             return res.end();
+        }
+        if (fields.showCase === true) {
+            if(fileExt === "png" || fileExt === "jpg" || fileExt === "gif" || fileExt === "jpeg") {
+                returnedFileName = `${showCaseFile}.html`
+                fs.move(oldpath, newpath, () => {
+                    fs.readFile(newpath, 'utf-8', (err, data) => {
+                        exif(newpath, (err, obj) => {
+                            if(!obj['camera model name']) obj['camera model name'] = "N/A";
+                            if(!obj['f number']) obj['f number'] = "N/A";
+                            if(!obj['exposure time']) obj['exposure time'] = "N/A";
+                            if(!obj['iso']) obj['iso'] = "N/A";
+                            if(!obj['focal length']) obj['focal length'] = "N/A";
+                            if(!obj['image size']) obj['image size'] = "N/A";
+                            if(!obj['lens id']) obj['lens id'] = "N/A";
+                            let camera = obj['camera model name'].replace(/<|>|&lt;|&gt;/gm, "")
+                            let fstop = `f/${obj['f number']}`.replace(/<|>|&lt;|&gt;/gm, "")
+                            let shutter = obj['exposure time'].replace(/<|>|&lt;|&gt;/gm, "")
+                            let iso = obj['iso'].replace(/<|>|&lt;|&gt;/gm, "")
+                            let focal = obj['focal length'].replace(/<|>|&lt;|&gt;/gm, "")
+                            let dims = obj['image size'].replace(/<|>|&lt;|&gt;/gm, "")
+                            let lens = obj['lens id'].replace(/<|>|&lt;|&gt;/gm, "")
+                            const stream = fs.createWriteStream(`${__dirname}/../uploads/${showCaseFile}.html`);
+                            stream.once('open', () => {
+                                ejs.renderFile(`${__dirname}/../views/photoShowCase.ejs`, {
+                                    camera: camera,
+                                    fstop, fstop,
+                                    shutter, shutter,
+                                    iso: iso,
+                                    focal: focal,
+                                    dims: dims,
+                                    lens: lens,
+                                    filename: `${fileName}.${fileExt}`
+                                }, {}, (_err, str) => {
+                                    stream.write(str);
+                                });
+                                stream.end();
+                            });
+                        });
+                    });
+                });
+                if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${showCaseFile}`);
+                if (err) return res.write(err);
+                this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${showCaseFile} | IP: ${userIP}`);
+                if (usingUploader === true) {
+                    res.redirect(`/?success=${protocol}://${req.headers.host}/${showCaseFile}`);
+                    return res.end();
+                }
+                res.write(`${protocol}://${req.headers.host}/${showCaseFile}`);
+                return res.end();
+            }
         }
         fs.move(oldpath, newpath, () => {
             if (fileExt.toLowerCase() === 'md' && this.c.markdown) {

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Image Showcase</title>
+    <meta name="theme-color" content="#DC603A">
+    <meta property="og:title" content="Image Showcase">
+    <meta property="og:description" content="Camera: <%= camera; %>
+F-Stop: <%= fstop; %>
+Shutter Speed: <%= shutter; %>
+ISO: <%= iso; %>
+Focal Length: <%= focal; %>
+Lens: <%= lens; %>">
+    <meta property="og:image" content="<%= filename; %>">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <style>
+    .showcaseImage {
+     -webkit-box-shadow: 7px 7px 22px -3px rgba(0,0,0,0.59);
+     -moz-box-shadow: 7px 7px 22px -3px rgba(0,0,0,0.59);
+     box-shadow: 7px 7px 22px -3px rgba(0,0,0,0.59);
+     height: 700px !important;
+    }
+    body {
+    background-color: white;
+    height: 100%;
+    }
+    .is-horizontal-center {
+    justify-content: center;
+    display: inline;
+    }
+    </style>
+  </head>
+  <body>
+  <section class="section has-text-centered ">
+    <div class="has-text-centered">
+      <h4><%= dims; %></h4>
+      <br />
+        <a class="column is-one-quarter is-horizontal-center has-text-centered "data-fancybox="gallery" data-caption="<b>Camera:</b> <%= camera; %><br />
+          <b>F-Stop:</b> <%= fstop; %><br />
+            <b>Shutter Speed:</b> <%= shutter; %><br />
+              <b>ISO:</b> <%= iso; %><br />
+              <b>Lens:</b> <%= lens; %><br />
+                <b>Focal Length:</b> <%= focal; %>" href="<%= filename; %>"><img height="500px" class="is-horizontal-center showcaseImage" src="<%= filename; %>"></a>
+      </div>
+  </section>
+  </body>
