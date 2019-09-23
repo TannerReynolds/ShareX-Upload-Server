@@ -155,7 +155,7 @@ async function files(req, res) {
                                     focal: focal,
                                     dims: dims,
                                     lens: lens,
-                                    filename: `${fileName}.${fileExt}`
+                                    filename: `${protocol}://${req.headers.host}/${fileName}.${fileExt}`
                                 }, {}, (_err, str) => {
                                     stream.write(str);
                                 });
