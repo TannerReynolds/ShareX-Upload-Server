@@ -16,6 +16,7 @@
 - ### Server Administration using Discord bot commands
 - ### Front end upload page [[Example](http://155.138.230.9/upload)]
 - ### Password protected gallery page (password is admin key)
+- ### Showcase images (image display pages that show metadata for photography)
 
 #### [You can demo the features/server here](http://155.138.230.9/)
 
@@ -95,6 +96,11 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
 - Add a field to your body called `pupload`, and then make the value whatever you want the password to be
 - Upload something, and the upload will give you a url to the authentication page
 - Type in your password, and it will display/download the file!
+
+### Showcase Field
+ - Add a field to your body called `showCase`, and then make the value `true`
+ - Upload an image
+ - Click the image to view image's metadata like camera, lens, iso, shutter speed, etc.
 
 #### Auto Password Generation
 In addition to being able to use any password you want for puploads, if you type in `*random*` as your pupload field, the server will automatically generate a password for you. This password will include letters, numbers, and special characters. It will generate a key based on the length you specify in your config (puploadKeyGenLength). When making requests, the server will return the image URL with the key like so `URL: https://qoilo.com/lhHr | KEY: Np$[CBk>X[c^YY{MDlCHH0|Qfm1uK0*lld^Mi$f4d62R5x6C2>~yaL}3*QYnziuZ`
