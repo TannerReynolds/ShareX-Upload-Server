@@ -19,10 +19,11 @@ Lens: <%= lens; %>">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <style>
     .showcaseImage {
-     -webkit-box-shadow: 7px 7px 22px -3px rgba(0,0,0,0.59);
-     -moz-box-shadow: 7px 7px 22px -3px rgba(0,0,0,0.59);
-     box-shadow: 7px 7px 22px -3px rgba(0,0,0,0.59);
-     height: 700px !important;
+      filter: drop-shadow(0px 0px 1px rgba(0,0,0,.3))
+          drop-shadow(0px 0px 10px rgba(0,0,0,.3));
+     height: <%= height; %>px !important;
+     width: <%= width; %>px !important;
+     object-fit: scale-down !important;
     }
     body {
     background-color: white;

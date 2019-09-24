@@ -145,6 +145,14 @@ async function files(req, res) {
                             let focal = obj['focal length'].replace(/<|>|&lt;|&gt;/gm, "")
                             let dims = obj['image size'].replace(/<|>|&lt;|&gt;/gm, "")
                             let lens = obj['lens id'].replace(/<|>|&lt;|&gt;/gm, "")
+                            let width = parseInt(dims.split('x')[0]);
+                            let height = parseInt(dims.split('x')[1]);
+                            if(height > 700) {
+                                let magicNumber = height / 700;
+                                height = height / magicNumber;
+                                width = width / magicNumber
+                            }
+                            let sizing = [width, height]
                             const stream = fs.createWriteStream(`${__dirname}/../uploads/${showCaseFile}.html`);
                             stream.once('open', () => {
                                 ejs.renderFile(`${__dirname}/../views/photoShowCase.ejs`, {
@@ -155,6 +163,8 @@ async function files(req, res) {
                                     focal: focal,
                                     dims: dims,
                                     lens: lens,
+                                    width: sizing[0],
+                                    height: sizing[1],
                                     filename: `${protocol}://${req.headers.host}/${fileName}.${fileExt}`
                                 }, {}, (_err, str) => {
                                     stream.write(str);
