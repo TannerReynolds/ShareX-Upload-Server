@@ -1,5 +1,6 @@
 {
   "key": "",
+  "domain": "example.com",
   "puploadKeyGenLength": 64,
   "public": false,
   "maxUploadSize": 50,

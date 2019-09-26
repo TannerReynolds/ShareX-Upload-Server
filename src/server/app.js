@@ -57,6 +57,28 @@ class ShareXAPI {
         this.app.use(bodyParser.urlencoded({
             extended: true,
         }));
+
+        /* Don't allow access if not accessed with configured domain */
+        this.app.use((req, res, next) => {
+            if(req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
+                res.statusCode = 401;
+                res.write('Error 401: Unauthorized Domain');
+                return res.end();
+            } else if(this.c.domain.includes('*')) {
+                let reqParts = req.headers.host.toLowerCase().split('.');
+                let domainParts = this.c.domain.toLowerCase().split('.')
+                if(reqParts[1] === domainParts[1] && reqParts[2] === domainParts[2]) {
+                    next();
+                } else {
+                    res.statusCode = 401;
+                    res.write('Error 401: Unauthorized Domain');
+                    return res.end();
+                }
+            } else {
+                next();
+            }
+        });
+
         /** Checking to see if IP is banned */
         this.app.use((req, res, next) => {
             const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
