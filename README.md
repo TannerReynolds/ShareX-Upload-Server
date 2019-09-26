@@ -36,6 +36,7 @@ You must fill this out for the webserver to work properly. Below explains the co
 ```js
 {
   "key": "", // Password for private uploading
+  "domain": "*.example.com" // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
   "puploadKeyGenLength: 64, // Amount of characters server should use for pupload files
   "public": false, // Disables auth and does not render a password field for /upload
   "maxUploadSize": 50, // max upload size for non-admins using regular key in MB
@@ -78,6 +79,9 @@ proxy_cache_bypass $http_upgrade;
 ```
 This is generally some things you want to add to your config, and is what's actually required for SUS to work properly. This is because SUS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running SUS through a reverse proxy, unless you're passing along the *original* headers, SUS is most likely just going to send you something like `http://[server's real ip address]/[filename]`
 
+### Note: Users of multiple domains
+If you have multiple domains pointed to this webserver, only one (can include wildcard subdomain) can be used, **unless** the domain setting is set to just a single * like so: `"domain": "*",`. This means that any domain will be accepted as a valid domain by the server, regardless of subdomain.
+
 ## Setting up Discord logging
 if you wish to log your webserver's activity in a Discord channel for whatever reason, you can.
 [Here is information on how to setup a bot account and get the information needed for Discord logging](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
@@ -101,6 +105,7 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
  - Add a field to your body called `showCase`, and then make the value `true`
  - Upload an image
  - Click the image to view image's metadata like camera, lens, iso, shutter speed, etc.
+ - Requires extra software to be installed to your server, called [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/index.html) to read metadata from uploaded images. The install file will automatically install this software on ubuntu
 
 #### Auto Password Generation
 In addition to being able to use any password you want for puploads, if you type in `*random*` as your pupload field, the server will automatically generate a password for you. This password will include letters, numbers, and special characters. It will generate a key based on the length you specify in your config (puploadKeyGenLength). When making requests, the server will return the image URL with the key like so `URL: https://qoilo.com/lhHr | KEY: Np$[CBk>X[c^YY{MDlCHH0|Qfm1uK0*lld^Mi$f4d62R5x6C2>~yaL}3*QYnziuZ`
