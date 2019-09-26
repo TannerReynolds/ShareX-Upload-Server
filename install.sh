@@ -14,3 +14,4 @@ fi
 (make)
 (make test)
 (make install)
+echo "Finished installing dependencies!"
