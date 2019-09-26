@@ -60,7 +60,9 @@ class ShareXAPI {
 
         /* Don't allow access if not accessed with configured domain */
         this.app.use((req, res, next) => {
-            if(req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
+            if(this.c.domain === '*') {
+                next();
+            } else if(req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
                 res.statusCode = 401;
                 res.write('Error 401: Unauthorized Domain');
                 return res.end();
