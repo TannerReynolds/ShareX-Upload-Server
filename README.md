@@ -35,7 +35,7 @@ You must fill this out for the webserver to work properly. Below explains the co
 
 ```js
 {
-  "key": "", // Password for private uploading
+  "key": [""], // Password(s) for private uploading
   "domain": "*.example.com" // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
   "puploadKeyGenLength: 64, // Amount of characters server should use for pupload files
   "public": false, // Disables auth and does not render a password field for /upload
@@ -49,7 +49,7 @@ You must fill this out for the webserver to work properly. Below explains the co
     "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
   ], // Allowed file types for non-admins
   "admin":{
-    "key": "", // Admin password for uploading & for gallery access
+    "key": [""], // Admin password(s) for uploading & for gallery access
     "maxUploadSize": 1024, // Max upload size for admin in MB
     "allowed": [
     "png", "jpg", "gif", "mp4", "mp3","jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv", "html"
