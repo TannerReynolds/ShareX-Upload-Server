@@ -1,8 +1,5 @@
-function auth(myKey, givenKey, c) {
-    if (c.public === true) return true;
-    if (myKey !== null && givenKey !== myKey && givenKey !== c.admin.key) {
-        return false;
-    }
-    return true;
+function auth(myKey, givenKey, c) {  
+    if (c.key.includes(givenKey) || c.admin.key.includes(givenKey) || c.public === true || myKey === null) return true;
+    return false; 
 }
 module.exports = auth;
