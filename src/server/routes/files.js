@@ -18,6 +18,7 @@ async function files(req, res) {
     // eslint-disable-next-line no-shadow
     form.parse(req, (err, fields, files) => {
         const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+        const authKey = fields.key;
         let usingUploader = false;
         if (files.fdataUploader && !fields.key) {
             usingUploader = true;
@@ -28,13 +29,13 @@ async function files(req, res) {
             res.statusCode = 401;
             res.write('Unauthorized');
             res.end();
-            return this.log.warning(`Unauthorized User | File Upload | ${userIP}`);
+            return this.log.warning(`Unauthorized User | File Upload | ${userIP} | ${authKey}`);
         } if (!this.auth(this.c.key, fields.password, this.c) && usingUploader === true) {
             this.log.warning(this.auth(this.c.key, fields.password, this.c));
             res.statusCode = 401;
             res.redirect('/?error=Incorrect_Password');
             res.end();
-            return this.log.warning(`Unauthorized User | File Upload | ${userIP}`);
+            return this.log.warning(`Unauthorized User | File Upload | ${userIP} | ${authKey}`);
         }
         const oldpath = files.fdata.path;
         const fileExt = files.fdata.name.substring(files.fdata.name.lastIndexOf('.') + 1, files.fdata.name.length).toLowerCase();
@@ -69,7 +70,7 @@ async function files(req, res) {
             ? settings = this.c
             : settings = this.c.admin;
         if (Math.round((files.fdata.size / 1024) / 1000) > settings.maxUploadSize) {
-            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``);
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``);
             res.statusCode = 413;
             if (usingUploader === true) {
                 res.redirect('/?error=File_Too_Big');
@@ -79,7 +80,7 @@ async function files(req, res) {
             return res.end();
         }
         if (!this.c.allowed.includes(fileExt) && fields.key !== this.c.admin.key) {
-            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``);
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``); 
             res.statusCode = 415;
             if (usingUploader === true) {
                 res.redirect('/?error=Illegal_File_Type');
@@ -115,9 +116,9 @@ async function files(req, res) {
                     });
                 });
             });
-            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`);
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`);
             if (err) return res.write(err);
-            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP}`);
+            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP} | KEY: ${authKey}`);
             if (usingUploader === true) {
                 res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`);
                 return res.end();
@@ -174,9 +175,9 @@ async function files(req, res) {
                         });
                     });
                 });
-                if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${showCaseFile}`);
+                if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${showCaseFile}`);
                 if (err) return res.write(err);
-                this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${showCaseFile} | IP: ${userIP}`);
+                this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${showCaseFile} | IP: ${userIP} | KEY ${authKey}`);
                 if (usingUploader === true) {
                     res.redirect(`/?success=${protocol}://${req.headers.host}/${showCaseFile}`);
                     return res.end();
@@ -203,9 +204,9 @@ async function files(req, res) {
                     });
                 });
             }
-            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`);
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n[KEY](${authKey})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`);
             if (err) return res.write(err);
-            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP}`);
+            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP} | KEY: ${authKey}`);
             if (usingUploader === true) {
                 res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`);
                 return res.end();
