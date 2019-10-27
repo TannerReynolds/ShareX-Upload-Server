@@ -12,7 +12,13 @@ async function pupload(req, res) {
     }
     const filePath = `${__dirname}/../passwordUploads/${entry.fileName}`;
     const file = fs.readFileSync(filePath);
-    res.set('Content-Type', this.mimeType(entry.fileName));
-    res.send(file);
+    if(entry.fileName.includes('.mp3')) {
+        res.set('Content-Type', 'text/html');
+        let base64Str = new Buffer(file).toString('base64');
+        res.render('mp3', { data: base64Str })
+    } else {
+        res.set('Content-Type', this.mimeType(entry.fileName));
+        res.send(file);
+    }
 }
 module.exports = pupload;
