@@ -36,8 +36,8 @@ You must fill this out for the webserver to work properly. Below explains the co
 ```js
 {
   "key": [""], // Password(s) for private uploading
-  "domain": "*.example.com" // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
-  "puploadKeyGenLength: 64, // Amount of characters server should use for pupload files
+  "domain": "*.example.com", // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
+  "puploadKeyGenLength": 64, // Amount of characters server should use for pupload files
   "public": false, // Disables auth and does not render a password field for /upload
   "maxUploadSize": 50, // max upload size for non-admins using regular key in MB
   "markdown": true, // enables markdown rendering (upload whole .md file for render)
