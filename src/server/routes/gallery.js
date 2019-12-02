@@ -18,7 +18,6 @@ async function post(req, res) {
     }
     this.log.warning(`IP Address: ${userIP} successfully accessed gallery`);
     const pics = [];
-    var dir = '`${__dirname}/../uploads`';
     fs.readdir(`${__dirname}/../uploads`, function(err, files){
         files = files.map(function (fileName) {
           return {
