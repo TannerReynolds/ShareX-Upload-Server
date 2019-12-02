@@ -10,8 +10,7 @@ async function post(req, res) {
     res.setHeader('Content-Type', 'text/html');
     const protocol = this.protocol();
     const password = this.c.admin.key;
-    const givenPassword = req.body.password;
-    if (!this.auth(password, givenPassword, this.c)) {
+    if (!this.auth(password, req.body.password, this.c)) {
         res.statusCode = 401;
         res.render('unauthorized');
         res.end();
