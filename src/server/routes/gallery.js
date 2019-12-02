@@ -14,7 +14,7 @@ async function post(req, res) {
         res.statusCode = 401;
         res.render('unauthorized');
         res.end();
-        return this.log.warning(`Unauthorized User | File Upload | ${userIP}`);
+        return this.log.warning(`Unauthorized User | Gallery Access | ${userIP}`);
     }
     this.log.warning(`IP Address: ${userIP} successfully accessed gallery`);
     const pics = [];
