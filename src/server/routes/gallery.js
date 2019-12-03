@@ -22,7 +22,7 @@ async function post(req, res) {
         files = files.map(function (fileName) {
           return {
             name: fileName,
-            time: fs.statSync(`${__dirname}/../uploads` + '/' + fileName).mtime.getTime()
+            time: fs.statSync(`${__dirname}/../uploads/${fileName}`).mtime.getTime()
           };
         })
         files.sort(function (a, b) {
