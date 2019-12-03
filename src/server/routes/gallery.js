@@ -14,9 +14,10 @@ async function post(req, res) {
         res.statusCode = 401;
         res.render('unauthorized');
         res.end();
-        return this.log.warning(`Unauthorized User | Gallery Access | ${userIP}`);
+        return this.log.warning(`Unauthorized User | Gallery Access | ${userIP} | ${req.body.password}`);
     }
-    this.log.warning(`IP Address: ${userIP} successfully accessed gallery`);
+    this.log.warning(`IP Address: ${userIP} successfully accessed gallery with key ${req.body.password}`);
+    if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[GALLERY ACCESS][USER]\n[IP](${userIP})\n[KEY](${req.body.password})\n\`\`\``);
     const pics = [];
     fs.readdir(`${__dirname}/../uploads`, function(err, files){
         files = files.map(function (fileName) {
