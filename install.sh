@@ -7,9 +7,9 @@ if which node > /dev/null
 fi
 (cd src && npm i -g pm2)
 (cd src && npm i)
-(wget https://netix.dl.sourceforge.net/project/exiftool/Image-ExifTool-10.61.tar.gz)
-(tar xvf Image-ExifTool-10.61.tar.gz)
-(cd Image-ExifTool-10.61/)
+(wget https://iweb.dl.sourceforge.net/project/exiftool/Image-ExifTool-11.80.tar.gz)
+(tar xvf Image-ExifTool-11.80.tar.gz)
+(cd Image-ExifTool-11.80/)
 (perl Makefile.PL)
 (make)
 (make test)
