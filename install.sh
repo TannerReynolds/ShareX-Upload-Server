@@ -1,3 +1,15 @@
+echo "Update apt-get"
+echo "--------------------------------------------"
+apt-get -y update
+echo "--------------------------------------------"
+PKG_OK=$(dpkg-query -W --showformat='${Status}\n' make|grep "install ok installed")
+echo Checking for make: $PKG_OK
+if [ "" == "$PKG_OK" ]; then
+  echo "Make isn't installed. Setting up make."
+  sudo apt-get -y install make
+echo "--------------------------------------------"
+
+fi
 if which node > /dev/null
     then
         echo "Node is already installed, skipping..."
