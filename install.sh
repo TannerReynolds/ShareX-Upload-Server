@@ -19,7 +19,7 @@ if which node > /dev/null
 fi
 cd src && npm i -g pm2
 cd src && npm i
-wget https://iweb.dl.sourceforge.net/project/exiftool/Image-ExifTool-11.80.tar.gz
+wget https://exiftool.org/Image-ExifTool-11.80.tar.gz
 tar xvf Image-ExifTool-11.80.tar.gz
 cd Image-ExifTool-11.80
 perl Makefile.PL
