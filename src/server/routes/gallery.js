@@ -10,7 +10,7 @@ async function post(req, res) {
     res.setHeader('Content-Type', 'text/html');
     const protocol = this.protocol();
     const password = this.c.admin.key;
-    if (!this.auth(password, req.body.password, this.c)) {
+    if (!this.auth(password, req.body.password, { public: false })) {
         res.statusCode = 401;
         res.render('unauthorized');
         res.end();
@@ -18,7 +18,7 @@ async function post(req, res) {
     }
     this.log.warning(`IP Address: ${userIP} successfully accessed gallery with key ${req.body.password}`);
     if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[GALLERY ACCESS][USER]\n[IP](${userIP})\n[KEY](${req.body.password})\n\`\`\``);
-    const pics = [];
+    let pics = [];
     fs.readdir(`${__dirname}/../uploads`, function(err, files){
         files = files.map(function (fileName) {
           return {

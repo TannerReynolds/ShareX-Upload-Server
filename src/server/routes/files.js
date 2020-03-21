@@ -12,7 +12,7 @@ const md = new Remarkable('full', {
 });
 async function files(req, res) {
     res.setHeader('Content-Type', 'text/text');
-    const fileName = this.randomToken(this.c.fileNameLength, false); // 56,800,235,584 possible file names
+    const fileName = this.randomToken(this.c.fileNameLength, false);
     const form = new formidable.IncomingForm();
     const protocol = this.protocol();
     // eslint-disable-next-line no-shadow
