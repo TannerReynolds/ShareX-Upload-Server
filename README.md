@@ -75,7 +75,7 @@ proxy_set_header Connection 'upgrade';
 proxy_set_header Host $host;
 proxy_cache_bypass $http_upgrade;
 ```
-This is generally some things you want to add to your config, and is what's actually required for SUS to work properly. This is because SUS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running SUS through a reverse proxy, unless you're passing along the *original* headers, SUS is most likely just going to send you something like `http://[server's real ip address]/[filename]`
+This is generally some things you want to add to your config, and is what's actually required for ShareS to work properly. This is because ShareS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running ShareS through a reverse proxy, unless you're passing along the *original* headers, ShareS is most likely just going to send you something like `http://[server's real ip address]/[filename]`
 
 ### Note: Users of multiple domains
 If you have multiple domains pointed to this webserver, only one (can include wildcard subdomain) can be used, **unless** the domain setting is set to just a single * like so: `"domain": "*",`. This means that any domain will be accepted as a valid domain by the server, regardless of subdomain.
