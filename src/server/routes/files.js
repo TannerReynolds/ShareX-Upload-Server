@@ -17,7 +17,7 @@ async function files(req, res) {
     const protocol = this.protocol();
     // eslint-disable-next-line no-shadow
     form.parse(req, (err, fields, files) => {
-        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
         const authKey = fields.key;
         let usingUploader = false;
         if (files.fdataUploader && !fields.key) {

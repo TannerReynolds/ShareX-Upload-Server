@@ -6,7 +6,7 @@ async function get(_req, res) {
     res.end();
 }
 async function post(req, res) {
-    const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
     res.setHeader('Content-Type', 'text/html');
     const protocol = this.protocol();
     const password = this.c.admin.key;

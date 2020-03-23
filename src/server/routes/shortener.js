@@ -6,7 +6,7 @@ async function shortener(req, res) {
     const form = new formidable.IncomingForm();
     // eslint-disable-next-line no-unused-vars
     form.parse(req, (_err, fields, _files) => {
-        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
         const protocol = this.protocol();
         if (!this.auth(this.c.key, fields.key, this.c)) {
             res.statusCode = 401;
