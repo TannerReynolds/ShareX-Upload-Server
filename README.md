@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://qoilo.com/Xaty.gif">
+  <img src="https://cdn.qoilo.com/IBjS.gif">
 </p>
 
 <img src="https://img.shields.io/badge/Hosting-Hyper%20Expert-blue?style=flat-square&logo=server-fault&logo-color=white&link=https://qoilo.com/hosting" alt="Hosting"> <img src="https://img.shields.io/badge/Support-Discord-blue?style=flat-square&logo=discord&color=7289DA&logoColor=7289DA&link=https://discord.gg/h8qthfS" alt="Discord">  <img src="https://img.shields.io/badge/Version-4.5.0-red?style=flat-square&link=https://qoilo.com/hosting" alt="Version">
@@ -8,17 +8,15 @@
 ## Features
 
 - ### Image/Video/General file uploading
-- ### Text (With [Syntax Highlighting](https://highlightjs.org/)) [[Example](http://155.138.230.9/SSuaQ)]
-- ### URL shortening + a front end for the URL shortener as well [[Example](http://155.138.230.9/short)]
-- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files [[Example](http://155.138.230.9/5xc9Jk)]
+- ### Text (With [Syntax Highlighting](https://highlightjs.org/)) [[Example](https://cdn.qoilo.com/s62pq)]
+- ### URL shortening + a front end for the URL shortener as well
+- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files [[Example](https://cdn.qoilo.com/LxiR)]
 - ### Logging via a Discord channel
-- ### Password protected uploading
+- ### Password protected uploading (Uploads that require file-specific password to view/download)
 - ### Server Administration using Discord bot commands
-- ### Front end upload page [[Example](http://155.138.230.9/upload)]
+- ### Front end upload page [[Example](https://cdn.qoilo.com)]
 - ### Password protected gallery page (password is admin key)
-- ### Showcase images (image display pages that show metadata for photography)
-
-#### [You can demo the features/server here](http://155.138.230.9/)
+- ### Showcase images (image display pages that show metadata for photography) [[Example](https://cdn.qoilo.com/KH5z)]
 
 ## Installation (Ubuntu 16.04 Server)
 ```sh
@@ -91,9 +89,6 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
  - Navigate to `Destinations -> Custom Uploader Settings`
  - Import the sxcu files from the downloaded zip one by one
  - Properly Configure Template
- 
- ![template](https://qoilo.com/W513)
- 
  - Change `Destination Location`
 
 ### Configuring for Password Protected Uploading
@@ -101,14 +96,15 @@ if you wish to log your webserver's activity in a Discord channel for whatever r
 - Upload something, and the upload will give you a url to the authentication page
 - Type in your password, and it will display/download the file!
 
+#### Auto Password Generation
+In addition to being able to use any password you want for puploads, if you type in `*random*` as your pupload field, the server will automatically generate a password for you. This password will include letters, numbers, and special characters. It will generate a key based on the length you specify in your config (puploadKeyGenLength). When making requests, the server will return the image URL with the key like so `URL: https://qoilo.com/lhHr | KEY: Np$[CBk>X[c^YY{MDlCHH0|Qfm1uK0*lld^Mi$f4d62R5x6C2>~yaL}3*QYnziuZ`
+
 ### Showcase Field
  - Add a field to your body called `showCase`, and then make the value `true`
  - Upload an image
  - Click the image to view image's metadata like camera, lens, iso, shutter speed, etc.
- - Requires extra software to be installed to your server, called [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/index.html) to read metadata from uploaded images. The install file will automatically install this software on ubuntu
-
-#### Auto Password Generation
-In addition to being able to use any password you want for puploads, if you type in `*random*` as your pupload field, the server will automatically generate a password for you. This password will include letters, numbers, and special characters. It will generate a key based on the length you specify in your config (puploadKeyGenLength). When making requests, the server will return the image URL with the key like so `URL: https://qoilo.com/lhHr | KEY: Np$[CBk>X[c^YY{MDlCHH0|Qfm1uK0*lld^Mi$f4d62R5x6C2>~yaL}3*QYnziuZ`
+ - Requires extra software to be installed to your server, called [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/index.html) to read metadata from uploaded images. The install file will automatically install this software on ubuntu.
+ - Windows servers using this feature wil need the Windows executable for exiftool and it will need to be added to your environment variables or ShareS will throw errors on upload and return 404s
 
 ## Credits
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
