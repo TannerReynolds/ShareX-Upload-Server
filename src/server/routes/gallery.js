@@ -35,7 +35,6 @@ async function post(req, res) {
               pics.push(`${protocol}://${req.headers.host}/${file.toString()}`);
             }
             if (idx === array.length - 1) {
-              this.log.success('rendering gallery')
                 res.render('gallery', {
                   pictures: pics,
                 });
