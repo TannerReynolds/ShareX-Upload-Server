@@ -105,6 +105,19 @@ In addition to being able to use any password you want for puploads, if you type
  - Click the image to view image's metadata like camera, lens, iso, shutter speed, etc.
  - Requires extra software to be installed to your server, called [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/index.html) to read metadata from uploaded images. The install file will automatically install this software on ubuntu.
  - Windows servers using this feature wil need the Windows executable for exiftool and it will need to be added to your environment variables or ShareS will throw errors on upload and return 404s
+ 
+## Contributing
+### Pull Requests
+ - Be sure you properly lint your files prior to making a pull request. eslint file available
+ - Do your own testing
+ - Properly comment your code. My code isn't really commented on because it's my code and I understand how everything fits together and works. It isn't a very large project. You will need to comment on your code though so that I could understand going forward when more features get added
+ - Not all features are going to be added. Just because you code something that may be useful to you, that does not mean it will for sure be added. 
+
+### Bug Reports
+ - Follow the issue template format or your issue will likely not be solved. If you do not follow the format I won't have enough information to diagnose the problem and fix it. 
+  - If I ask questions and you do not respond on the thread, and I'm not experiencing the issue / am not able to replicate the issue, I will close the issue thread, and you'll have to make another one if the problem persists. 
+  - Please make sure your system setup isn't the cause of your issue. This webserver can be ran through several different pieces of software, reverse proxies, operating systems, network types, just please make sure that you havent made in error in setting up your system before submitting the issue. We do not help people with every combination of setup that exists, if you're using some weird OS, runnning ShareS through your own custom reverse proxy, don't expect much support from us if it doesn't work.
+  - Ensure your config isn't the issue. Most issues people have with setting up the server and experiencing crashes are due to an error in how you made your config file. Be sure to read the descriptions for each one and use the correct data type (array, string, number, array with strings, etc.)
 
 ## Credits
 #### [Ken](https://github.com/NotWeeb) - Initial File Uploader
