@@ -9,7 +9,7 @@ async function paste(req, res) {
     const form = new formidable.IncomingForm();
     const protocol = this.protocol();
     form.parse(req, (err, fields, files) => {
-        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
+        req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0]; userIP = userIP.split(",")[0];
         if (!this.auth(this.c.key, fields.key, this.c)) {
             res.statusCode = 401;
             res.write('Unauthorized');

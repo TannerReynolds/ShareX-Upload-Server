@@ -6,7 +6,7 @@ async function get(req, res) {
     res.end();
 }
 async function post(req, res) {
-    const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
+    req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0]; userIP = userIP.split(",")[0];
     res.setHeader('Content-Type', 'text/text');
     if (!this.auth(this.c.key, req.body.password, this.c) && !this.c.public) {
         res.statusCode = 401;

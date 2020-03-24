@@ -83,7 +83,7 @@ class ShareXAPI {
 
         /** Checking to see if IP is banned */
         this.app.use((req, res, next) => {
-            const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
+            req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0]; userIP = userIP.split(",")[0];
             const exists = this.db.get('bans').find({ ip: userIP }).value();
             if (exists === undefined) { // if a ban was not found, then it will move on
                 next();
@@ -97,7 +97,7 @@ class ShareXAPI {
         const ratelimited = new Set();
         this.app.use((req, res, next) => {
             if (req.method === 'POST') {
-                const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
+                req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0]; userIP = userIP.split(",")[0];
                 if (ratelimited.has(userIP)) {
                     res.statusCode = 429;
                     res.write('Error 429: Ratelimited');
@@ -113,7 +113,7 @@ class ShareXAPI {
         });
         this.app.use((req, res, next) => {
             if (req.method === 'GET') {
-                const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0];
+                req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress.split(",")[0]; userIP = userIP.split(",")[0];
                 let file = req.path;
                 // Not ignoring these files causes bloat in the db
                 const ignored = ['/favicon.ico', '/assets/css/styles.min.css', '/highlight.pack.js', '/highlightjs-line-numbers.min.js', '/paste.css', '/atom-one-dark.css'];
