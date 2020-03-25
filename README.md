@@ -112,7 +112,7 @@ In addition to being able to use any password you want for puploads, if you type
  - Do your own testing
  - Properly comment your code. My code isn't really commented on because it's my code and I understand how everything fits together and works. It isn't a very large project. You will need to comment on your code though so that I could understand going forward when more features get added
  - Not all features are going to be added. Just because you code something that may be useful to you, that does not mean it will for sure be added. 
- - **Update the version of ShareS when you create a pull request. If the current version at the time of your PR is** `4.5.6`**, make sure to change the shield in the README and the package.json file to say version** `4.5.7`**. If the version is** `4.5.10`**, then update it to** `4.5.11`**. Only update the last digit.**
+ - **Update the version of ShareS when you create a pull request. If the current version at the time of your PR is** `4.5.6`**, make sure to change the shield in the README and the package.json file to say version** `4.5.7`**. If the version is** `4.5.10`**, then update it to** `4.5.11`**. Only update the last digit. Updates/PRs that are not code (README.md, install.sh, sxcu files, package.json, etc.) should not constitute an updated version number for the project, so PRs for those specific files will not increment the version number**
 
 ### Bug Reports
  - Follow the issue template format or your issue will likely not be solved. If you do not follow the format I won't have enough information to diagnose the problem and fix it. 
