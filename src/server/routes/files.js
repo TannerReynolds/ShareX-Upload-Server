@@ -248,11 +248,13 @@ function getDate(type) {
     if(type.toLowerCase() === 'month') {
         const date = new Date();
         const currentMonth = date.getMonth() + 1;
+        if(currentMonth.length === 1) currentMonth = `0${currentMonth}`
         return currentMonth;
     }
     if(type.toLowerCase() === 'day') {
         const date = new Date();
         const currentDay = date.getDate();
+        if(currentDay.length === 1) currentDay = `0${currentDay}`;
         return currentDay;
     }
 }
