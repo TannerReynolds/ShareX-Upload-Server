@@ -40,9 +40,30 @@ async function files(req, res) {
         const oldpath = files.fdata.path;
         const fileExt = files.fdata.name.substring(files.fdata.name.lastIndexOf('.') + 1, files.fdata.name.length).toLowerCase();
         let newpath;
+        if(this.c.dateURLPath === true) {
+            let currentMonth = getDate('month')
+            let currentYear = getDate('year')
+            let currentDay = getDate('day')
+            let baseDir = `${__dirname}/../uploads/`
+            let basePWDir = `${__dirname}/../passwordUploads/`
+            fs.access(`${baseDir}${currentYear}/${currentMonth}/${currentDay}`, err => {
+                if (err && err.code === 'ENOENT') {
+                    fs.mkdirSync(`${baseDir}${currentYear}`);
+                    fs.mkdirSync(`${baseDir}${currentYear}/${currentMonth}`);
+                    fs.mkdirSync(`${baseDir}${currentYear}/${currentMonth}/${currentDay}`)
+                }
+            });
+            fs.access(`${basePWDir}${currentYear}/${currentMonth}/${currentDay}`, err => {
+                if (err && err.code === 'ENOENT') {
+                    fs.mkdirSync(`${basePWDir}${currentYear}`);
+                    fs.mkdirSync(`${basePWDir}${currentYear}/${currentMonth}`);
+                    fs.mkdirSync(`${basePWDir}${currentYear}/${currentMonth}/${currentDay}`)
+                }
+            });
+        }
         fields.pupload
-            ? newpath = `${__dirname}/../passwordUploads/${fileName}.${fileExt}`
-            : newpath = `${__dirname}/../uploads/${fileName}.${fileExt}`;
+            ? newpath = `${__dirname}/../passwordUploads/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${fileName}.${fileExt}`
+            : newpath = `${__dirname}/../uploads/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${fileName}.${fileExt}`;
         let returnedFileName;
         if (!fileExt.includes('png') && !fileExt.includes('jpg') && !fileExt.includes('jpeg') && !fileExt.includes('md') && !fields.pupload) {
             returnedFileName = `${fileName}.${fileExt}`;
@@ -58,7 +79,7 @@ async function files(req, res) {
         }
         this.db.get('files')
             .push({
-                path: fields.showCase ? `/${showCaseFile}` : `/${returnedFileName}`,
+                path: fields.showCase ? `/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${showCaseFile}` : `/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName}`,
                 ip: userIP,
                 views: 0,
                 original: newpath,
@@ -66,10 +87,11 @@ async function files(req, res) {
             })
             .write();
         let settings;
+        let isAdmin = false;
         fields.key !== this.c.admin.key
             ? settings = this.c
-            : settings = this.c.admin;
-        if (Math.round((files.fdata.size / 1024) / 1000) > settings.maxUploadSize) {
+            : settings = this.c.admin, isAdmin = true;
+        if (Math.round((files.fdata.size / 1024) / 1000) > settings.maxUploadSize && isAdmin === false) {
             if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``);
             res.statusCode = 413;
             if (usingUploader === true) {
@@ -79,7 +101,7 @@ async function files(req, res) {
             res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`);
             return res.end();
         }
-        if (!this.c.allowed.includes(fileExt) && fields.key !== this.c.admin.key) {
+        if (!this.c.allowed.includes(fileExt) && fields.key !== this.c.admin.key && isAdmin === false) {
             if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``); 
             res.statusCode = 415;
             if (usingUploader === true) {
@@ -116,11 +138,11 @@ async function files(req, res) {
                     });
                 });
             });
-            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`);
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName}`);
             if (err) return res.write(err);
-            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP} | KEY: ${authKey}`);
+            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName} | IP: ${userIP} | KEY: ${authKey}`);
             if (usingUploader === true) {
-                res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`);
+                res.redirect(`/?success=${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName}`);
                 return res.end();
             }
             fields.pupload === '*random*' ? res.write(`URL: ${protocol}://${req.headers.host}/${returnedFileName} | KEY: ${altKey}`) : res.write(`${protocol}://${req.headers.host}/${returnedFileName}`);
@@ -154,7 +176,7 @@ async function files(req, res) {
                                 width = width / magicNumber
                             }
                             let sizing = [width, height]
-                            const stream = fs.createWriteStream(`${__dirname}/../uploads/${showCaseFile}.html`);
+                            const stream = fs.createWriteStream(`${__dirname}/../uploads/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${showCaseFile}.html`);
                             stream.once('open', () => {
                                 ejs.renderFile(`${__dirname}/../views/photoShowCase.ejs`, {
                                     camera: camera,
@@ -166,7 +188,7 @@ async function files(req, res) {
                                     lens: lens,
                                     width: sizing[0],
                                     height: sizing[1],
-                                    filename: `${protocol}://${req.headers.host}/${fileName}.${fileExt}`
+                                    filename: `${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${fileName}.${fileExt}`
                                 }, {}, (_err, str) => {
                                     stream.write(str);
                                 });
@@ -175,21 +197,21 @@ async function files(req, res) {
                         });
                     });
                 });
-                if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${showCaseFile}`);
+                if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\`\`\`\n${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${showCaseFile}`);
                 if (err) return res.write(err);
-                this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${showCaseFile} | IP: ${userIP} | KEY ${authKey}`);
+                this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${showCaseFile} | IP: ${userIP} | KEY ${authKey}`);
                 if (usingUploader === true) {
-                    res.redirect(`/?success=${protocol}://${req.headers.host}/${showCaseFile}`);
+                    res.redirect(`/?success=${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${showCaseFile}`);
                     return res.end();
                 }
-                res.write(`${protocol}://${req.headers.host}/${showCaseFile}`);
+                res.write(`${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${showCaseFile}`);
                 return res.end();
             }
         }
         fs.move(oldpath, newpath, () => {
             if (fileExt.toLowerCase() === 'md' && this.c.markdown) {
                 fs.readFile(newpath, 'utf-8', (_readErr, data) => {
-                    const stream = fs.createWriteStream(`${__dirname}/../uploads/${fileName}.html`);
+                    const stream = fs.createWriteStream(`${__dirname}/../uploads/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${fileName}.html`);
                     stream.once('open', () => {
                         ejs.renderFile(`${__dirname}/../views/md.ejs`, {
                             ogDesc: data.match(/.{1,297}/g)[0],
@@ -204,16 +226,34 @@ async function files(req, res) {
                     });
                 });
             }
-            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n[KEY](${authKey})\n\`\`\`\n${protocol}://${req.headers.host}/${returnedFileName}`);
+            if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[NEW UPLOAD][USER]\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[IP](${userIP})\n[KEY](${authKey})\n\`\`\`\n${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName}`);
             if (err) return res.write(err);
-            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${returnedFileName} | IP: ${userIP} | KEY: ${authKey}`);
+            this.log.verbose(`New File Upload: ${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName} | IP: ${userIP} | KEY: ${authKey}`);
             if (usingUploader === true) {
-                res.redirect(`/?success=${protocol}://${req.headers.host}/${returnedFileName}`);
+                res.redirect(`/?success=${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName}`);
                 return res.end();
             }
-            res.write(`${protocol}://${req.headers.host}/${returnedFileName}`);
+            res.write(`${protocol}://${req.headers.host}/${this.c.dateURLPath === true ? `${getDate('year')}/${getDate('month')}/${getDate('day')}/`: ""}${returnedFileName}`);
             return res.end();
         });
     });
+}
+//const currentMonth = date.getMonth() + 1;
+function getDate(type) {
+    if(type.toLowerCase() === 'year') {
+        const date = new Date();
+        const currentYear = date.getFullYear();
+        return currentYear;
+    }
+    if(type.toLowerCase() === 'month') {
+        const date = new Date();
+        const currentMonth = date.getMonth() + 1;
+        return currentMonth;
+    }
+    if(type.toLowerCase() === 'day') {
+        const date = new Date();
+        const currentDay = date.getDate();
+        return currentDay;
+    }
 }
 module.exports = files;
