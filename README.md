@@ -41,8 +41,11 @@ You must fill this out for the webserver to work properly. Below explains the co
   "markdown": true, // enables markdown rendering (upload whole .md file for render)
   "port": 80, // port to listen on
   "secure": true, // Whether or not you want https. (make sure key and cert.pem are in src directory)
+  "fileNameLength": 4, // File name length
+  "shortUrlLength": 3, // File name length for short URLs
   "securePort": 443, // Port to use when secure is true
   "ratelimit": 1000, // Ratelimit for POSTing in milliseconds
+  "dateURLPath": false, // Set to true to prefix uploads with the date (Ex: https://domain.com/2020/04/22/ghNa.pdf)
   "allowed":[
     "png", "jpg", "gif", "mp4", "mp3", "jpeg", "tiff", "bmp", "ico", "psd", "eps", "raw", "cr2", "nef", "sr2", "orf", "svg", "wav", "webm", "aac", "flac", "ogg", "wma", "m4a", "gifv"
   ], // Allowed file types for non-admins
