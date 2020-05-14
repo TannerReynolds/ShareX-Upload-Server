@@ -4,7 +4,7 @@
   "description": "ShareX API made in Nodejs. Includes images, videos, code, text, and url shortening",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "ejs": "^2.6.1",
+    "ejs": "^3.1.2",
     "eris": "^0.13.1",
     "express": "^4.16.4",
     "formidable": "^1.2.1",
