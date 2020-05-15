@@ -1,7 +1,7 @@
 /* eslint-disable no-lonely-if */
 const formidable = require('formidable');
 const fs = require('fs-extra');
-const Remarkable = require('remarkable');
+const { Remarkable } = require('remarkable');
 const ejs = require('ejs');
 const exif = require('exif2');
 
