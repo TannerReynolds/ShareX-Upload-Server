@@ -25,6 +25,9 @@ async function files(req, res) {
             // eslint-disable-next-line no-param-reassign
             files.fdata = files.fdataUploader;
         }
+        if (files.file) {
+            files.fdata = files.file;
+        }
         if (!this.auth(this.c.key, fields.key, this.c) && usingUploader === false) {
             res.statusCode = 401;
             res.write('Unauthorized');
