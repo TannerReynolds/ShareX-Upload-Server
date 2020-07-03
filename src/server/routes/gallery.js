@@ -9,8 +9,12 @@ async function post(req, res) {
     const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     res.setHeader('Content-Type', 'text/html');
     const protocol = this.protocol();
-    const password = this.c.admin.key;
-    if (req.body.password !== this.c.admin.key) {
+    var password = this.c.admin.key;
+    // Compatibility with old config
+    if(typeof password == "string"){
+      password = [password];
+    }
+    if (!this.c.admin.key.includes(req.body.password)) {
         res.statusCode = 401;
         res.render('unauthorized');
         res.end();
