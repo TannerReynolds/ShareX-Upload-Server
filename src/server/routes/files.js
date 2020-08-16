@@ -91,10 +91,13 @@ async function files(req, res) {
             .write();
         let settings;
         let isAdmin = false;
-        fields.key !== this.c.admin.key
-            ? settings = this.c
-            : settings = this.c.admin, isAdmin = true;
-        if (Math.round((files.fdata.size / 1024) / 1000) > settings.maxUploadSize && isAdmin === false) {
+        if (!this.c.admin.key.includes(fields.key)) {
+            settings = this.c;
+        } else {
+            settings = this.c.admin;
+            isAdmin = true;
+        }
+        if (Math.round((files.fdata.size / 1024) / 1000) > settings.maxUploadSize && !isAdmin) {
             if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\n[ERROR](ERR_FILE_TOO_BIG)\`\`\``);
             res.statusCode = 413;
             if (usingUploader === true) {
@@ -104,7 +107,7 @@ async function files(req, res) {
             res.write(`${protocol}://${req.headers.host}/ERR_FILE_TOO_BIG`);
             return res.end();
         }
-        if (!this.c.allowed.includes(fileExt) && fields.key !== this.c.admin.key && isAdmin === false) {
+        if (!settings.allowed.some(ext => fileExt.endsWith(ext)) && !settings.allowed.includes("*")) {
             if (this.monitorChannel !== null) this.bot.createMessage(this.monitorChannel, `\`\`\`MARKDOWN\n[FAILED UPLOAD][USER]\n[FILE](${files.fdata.name})\n[SIZE](${Math.round(files.fdata.size / 1024)}KB)\n[TYPE](${files.fdata.type})\n[KEY](${authKey})\n[IP](${userIP})\n\n[ERROR](ERR_ILLEGAL_FILE_TYPE)\`\`\``); 
             res.statusCode = 415;
             if (usingUploader === true) {
