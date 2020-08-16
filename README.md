@@ -26,6 +26,20 @@ chmod +x install.sh
 ./install.sh
 ```
 
+## Docker
+```sh
+docker built -t sharex-upload-server .
+docker run --name "sharex-upload-server" -d \
+    -v $(pwd)/src/config.json:/usr/src/app/config.json \
+    -v $(pwd)/src/db.json:/usr/src/app/db.json \
+    -v $(pwd)/src/server/uploads/:/usr/src/app/server/uploads/ \
+    -p 8000:80 -p 8443:443 \
+    sharex-upload-server
+docker logs -f sharex-upload-server
+```
+
+`/src/config.json` will be the config file used if you used the above command to start the server. The web UI will be available on `https://server-ip:8443` if https is enabled, and `http://server-ip:8000` if it isn't.
+
 ## Configuration
 
 In the files you downloaded from this repository, you will see a file called `config.json` 
