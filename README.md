@@ -145,7 +145,7 @@ if [[ $(file --mime-type -b $temp_file) != "image/png" ]]; then
 fi
 
 image_url=$(curl -X POST -F "fdata=@"$temp_file -F "key="$key -v "$url" 2>/dev/null)
-echo $image_url | xclip -sel c
+echo -n $image_url | xclip -sel c
 notify-send "Image URL copied to clipboard" "$image_url" -a "Flameshot" -i $temp_file
 rm $temp_file
 ```
