@@ -122,7 +122,35 @@ In addition to being able to use any password you want for puploads, if you type
  - Click the image to view image's metadata like camera, lens, iso, shutter speed, etc.
  - Requires extra software to be installed to your server, called [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/index.html) to read metadata from uploaded images. The install file will automatically install this software on ubuntu.
  - Windows servers using this feature wil need the Windows executable for exiftool and it will need to be added to your environment variables or ShareS will throw errors on upload and return 404s
- 
+
+## Using with Flameshot (linux)
+In order to use ShareS with [Flameshot](https://github.com/flameshot-org/flameshot) you will need to use a simple script, here is an example:
+```bash
+key="YourPassword"
+# Only needed for multi-domain support, if you only have one simply set the url
+# 2 lines below to url="https://your.domain/api/files"
+urls=("https://example.com/api/files" "https://example.org/api/files")
+url=${urls[$RANDOM % ${#urls[@]}]}
+
+temp_file="/tmp/screenshot.png"
+
+# Run flameshot --help for options
+flameshot gui -r > $temp_file
+
+# For some reason flameshot always seems to exit with 0 even when aborting the process
+# so we had to find a way around that.
+if [[ $(file --mime-type -b $temp_file) != "image/png" ]]; then
+	rm $temp_file
+  notify-send "Screenshot aborted" -a "Flameshot" && exit 1
+fi
+
+image_url=$(curl -X POST -F "fdata=@"$temp_file -F "key="$key -v "$url" 2>/dev/null)
+echo $image_url | xclip -sel c
+notify-send "Image URL copied to clipboard" "$image_url" -a "Flameshot" -i $temp_file
+rm $temp_file
+```
+When running this script simply hit enter when you're satasfied with your image, Flameshot will then save the image to your clipboard which will then be replaced with the image URL once it's uploaded. For the best results I suggest disabling notifications in the Flameshot app.
+
 ## Contributing
 ### Pull Requests
  - Be sure you properly lint your files prior to making a pull request. eslint file available
