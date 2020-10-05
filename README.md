@@ -28,7 +28,7 @@ chmod +x install.sh
 
 ## Docker
 ```sh
-docker built -t sharex-upload-server .
+docker build -t sharex-upload-server .
 docker run --name "sharex-upload-server" -d \
     -v $(pwd)/src/config.json:/usr/src/app/config.json \
     -v $(pwd)/src/db.json:/usr/src/app/db.json \
