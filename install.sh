@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "Update apt-get"
 echo "--------------------------------------------"
 apt-get -y update
