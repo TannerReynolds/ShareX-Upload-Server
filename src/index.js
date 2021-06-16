@@ -34,8 +34,6 @@ async function loadConfig() {
 loadConfig().then(() => {
     /** Starting server using the selected config file */
     server = new ShareXAPI(c);
-    //Add log instruction
-    console.log("ShareX stared ..")
 });
 process.on('SIGINT', async () => {
     server.log.warning('Gracefully exiting..');
