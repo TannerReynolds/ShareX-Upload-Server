@@ -60,16 +60,16 @@ class ShareXAPI {
 
         /* Don't allow access if not accessed with configured domain */
         this.app.use((req, res, next) => {
-            if(this.c.domain === '*') {
+            if (this.c.domain === '*') {
                 next();
-            } else if(req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
+            } else if (req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
                 res.statusCode = 401;
                 res.write('Error 401: Unauthorized Domain');
                 return res.end();
-            } else if(this.c.domain.includes('*')) {
-                let reqParts = req.headers.host.toLowerCase().split('.');
-                let domainParts = this.c.domain.toLowerCase().split('.')
-                if(reqParts[1] === domainParts[1] && reqParts[2] === domainParts[2]) {
+            } else if (this.c.domain.includes('*')) {
+                const reqParts = req.headers.host.toLowerCase().split('.');
+                const domainParts = this.c.domain.toLowerCase().split('.');
+                if (reqParts[1] === domainParts[1] && reqParts[2] === domainParts[2]) {
                     next();
                 } else {
                     res.statusCode = 401;
@@ -114,7 +114,7 @@ class ShareXAPI {
         this.app.use((req, res, next) => {
             if (req.method === 'GET') {
                 const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                let file = req.path;
+                const file = req.path;
                 // Not ignoring these files causes bloat in the db
                 const ignored = ['/favicon.ico', '/assets/css/styles.min.css', '/highlight.pack.js', '/highlightjs-line-numbers.min.js', '/paste.css', '/atom-one-dark.css'];
                 let exists = this.db.get('files').find({ path: file }).value();
@@ -172,7 +172,7 @@ class ShareXAPI {
         });
         // All files in /uploads/ are publicly accessible via http
         this.app.use(express.static(`${__dirname}/uploads/`, {
-            extensions: this.c.admin.allowed.includes("*") ? null : this.c.admin.allowed,
+            extensions: this.c.admin.allowed.includes('*') ? null : this.c.admin.allowed,
         }));
         this.app.use(express.static(`${__dirname}/views/`, {
             extensions: ['css'],
