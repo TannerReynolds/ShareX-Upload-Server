@@ -84,10 +84,13 @@ You can keep your server running forever if you use a process manager, like pm2.
 ### Note: Nginx/reverse proxy users
 If you're configuring this webserver to run through an Nginx reverse proxy, make sure you add these lines to your reverse proxy config
 ```
-proxy_set_header Upgrade $http_upgrade;
-proxy_set_header Connection 'upgrade';
-proxy_set_header Host $host;
-proxy_cache_bypass $http_upgrade;
+  location / {
+   proxy_pass http://localhost:5788;
+   proxy_set_header Upgrade $http_upgrade;
+   proxy_set_header Connection 'upgrade';
+   proxy_set_header Host $host;
+   proxy_cache_bypass $http_upgrade;
+  }
 ```
 This is generally some things you want to add to your config, and is what's actually required for ShareS to work properly. This is because ShareS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running ShareS through a reverse proxy, unless you're passing along the *original* headers, ShareS is most likely just going to send you something like `http://[server's real ip address]/[filename]`
 
