@@ -1,11 +1,12 @@
 {
   "key": [""],
-  "domain": "example.com",
+  "domain": "*",
   "puploadKeyGenLength": 64,
   "public": false,
   "maxUploadSize": 50,
   "markdown": true,
   "port": 80,
+  "title": "ShareX Image Server",
   "secure": true,
   "fileNameLength": 4,
   "shortUrlLength": 3,

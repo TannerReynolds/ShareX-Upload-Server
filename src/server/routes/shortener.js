@@ -15,7 +15,7 @@ async function shortener(req, res) {
             return this.log.warning(`Unauthorized User | File Upload | ${userIP}`);
         }
         const fileName = this.randomToken(4); // 14,776,336 possible file names
-        const url = req.headers.url;
+        const { url } = req.headers;
         if (url == null) {
             res.send('NO_URL_PROVIDED');
             return res.end();

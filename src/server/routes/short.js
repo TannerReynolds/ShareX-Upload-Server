@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 
 async function get(req, res) {
     res.setHeader('Content-Type', 'text/html');
-    res.render('short', { public: this.c.public });
+    res.render('short', { public: this.c.public, title: this.c.title });
     res.end();
 }
 async function post(req, res) {
