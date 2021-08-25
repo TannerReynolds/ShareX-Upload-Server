@@ -1,22 +1,18 @@
-<p align="center">
-  <img src="https://cdn.qoilo.com/tK0y.gif">
-</p>
-
 <img src="https://img.shields.io/badge/Hosting-Hyper%20Expert-blue?style=flat-square&logo=server-fault&logo-color=white&link=https://qoilo.com/hosting" alt="Hosting"> <img src="https://img.shields.io/badge/Support-Discord-blue?style=flat-square&logo=discord&color=7289DA&logoColor=7289DA&link=https://discord.gg/h8qthfS" alt="Discord">  <img src="https://img.shields.io/badge/Version-4.5.2-red?style=flat-square&link=https://qoilo.com/hosting" alt="Version">
 
 # ShareS - A Nodejs ShareX Upload Server
 ## Features
 
 - ### Image/Video/General file uploading
-- ### Text (With [Syntax Highlighting](https://highlightjs.org/)) [[Example](https://cdn.qoilo.com/s62pq)]
+- ### Text (With [Syntax Highlighting](https://highlightjs.org/))
 - ### URL shortening + a front end for the URL shortener as well
-- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files [[Example](https://cdn.qoilo.com/LxiR)]
+- ### [Markdown rendering](https://github.com/jonschlinkert/remarkable) files
 - ### Logging via a Discord channel
 - ### Password protected uploading (Uploads that require file-specific password to view/download)
 - ### Server Administration using Discord bot commands
 - ### Front end upload page [[Example](https://cdn.qoilo.com)]
 - ### Password protected gallery page (password is admin key)
-- ### Showcase images (image display pages that show metadata for photography) [[Example](https://cdn.qoilo.com/KH5z)]
+- ### Showcase images (image display pages that show metadata for photography)
 
 ## Installation (Ubuntu 16.04 Server)
 ```sh
@@ -48,12 +44,13 @@ You must fill this out for the webserver to work properly. Below explains the co
 ```js
 {
   "key": [""], // Password(s) for private uploading
-  "domain": "*.example.com", // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
+  "domain": "", // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
   "puploadKeyGenLength": 64, // Amount of characters server should use for pupload files
   "public": false, // Disables auth and does not render a password field for /upload
   "maxUploadSize": 50, // max upload size for non-admins using regular key in MB
   "markdown": true, // enables markdown rendering (upload whole .md file for render)
   "port": 80, // port to listen on
+  "title": "ShareX Image Server", // Title text on header
   "secure": true, // Whether or not you want https. (make sure key and cert.pem are in src directory)
   "fileNameLength": 4, // File name length
   "shortUrlLength": 3, // File name length for short URLs
