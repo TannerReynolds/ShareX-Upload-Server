@@ -18,7 +18,7 @@ console.log(`\x1b[31m
   |                                                                    |
   ======================================================================
   |\x1b[0m\x1b[32m  Creator: github.com/TannerReynolds\x1b[0m\x1b[31m                                |
-  |\x1b[0m\x1b[32m  Discord: https://discord.gg/QTcU89d\x1b[0m\x1b[31m                               |
+  |\x1b[0m\x1b[32m  Guilded Server: https://www.guilded.gg/Tanners-Space?i=4WPKkDPd\x1b[0m\x1b[31m   |
   ======================================================================\x1b[0m`);
 
 /** Determines whether or not to use the test config or not.
