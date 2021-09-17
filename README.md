@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="https://cdn.qoilo.com/tK0y.gif">
-</p>
-
-<img src="https://img.shields.io/badge/Hosting-Hyper%20Expert-blue?style=flat-square&logo=server-fault&logo-color=white&link=https://qoilo.com/hosting" alt="Hosting"> <img src="https://img.shields.io/badge/Support-Discord-blue?style=flat-square&logo=discord&color=7289DA&logoColor=7289DA&link=https://discord.gg/h8qthfS" alt="Discord">  <img src="https://img.shields.io/badge/Version-4.5.2-red?style=flat-square&link=https://qoilo.com/hosting" alt="Version">
+<img src="https://img.shields.io/badge/Hosting-Hyper%20Expert-blue?style=flat-square&logo=server-fault&logo-color=white&link=https://qoilo.com/hosting" alt="Hosting"> <img src="https://img.shields.io/badge/Support-Guilded-yellow?style=flat-square&logo=discord&color=7289DA&logoColor=7289DA&link="https://www.guilded.gg/Tanners-Space?i=4WPKkDPd" alt="Guilded.gg">  <img src="https://img.shields.io/badge/Version-4.5.2-red?style=flat-square&link=https://qoilo.com/hosting" alt="Version">
 
 # ShareS - A Nodejs ShareX Upload Server
 ## Features
