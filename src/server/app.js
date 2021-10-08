@@ -45,7 +45,7 @@ class ShareXAPI {
         this.c = c;
         this.monitorChannel = null;
         this.checkMonth();
-        this.c.discordToken && this.c.discordToken !== undefined && this.c.discrdToken !== null
+        this.c.discordToken && this.c.discordToken !== undefined && this.c.discordToken !== null
             ? this.runDiscordBot()
             : this.log.verbose('No Discord Token provided...\nContinuing without Discord connection...');
         this.app = app;
