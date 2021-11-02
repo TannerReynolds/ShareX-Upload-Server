@@ -45,7 +45,7 @@ class ShareXAPI {
         this.c = c;
         this.monitorChannel = null;
         this.checkMonth();
-        this.c.discordToken && this.c.discordToken !== undefined && this.c.discrdToken !== null
+        this.c.discordToken && this.c.discordToken !== undefined && this.c.discordToken !== null
             ? this.runDiscordBot()
             : this.log.verbose('No Discord Token provided...\nContinuing without Discord connection...');
         this.app = app;
@@ -60,16 +60,16 @@ class ShareXAPI {
 
         /* Don't allow access if not accessed with configured domain */
         this.app.use((req, res, next) => {
-            if(this.c.domain === '*') {
+            if (this.c.domain === '*') {
                 next();
-            } else if(req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
+            } else if (req.headers.host !== this.c.domain.toLowerCase() && !this.c.domain.includes('*')) {
                 res.statusCode = 401;
                 res.write('Error 401: Unauthorized Domain');
                 return res.end();
-            } else if(this.c.domain.includes('*')) {
-                let reqParts = req.headers.host.toLowerCase().split('.');
-                let domainParts = this.c.domain.toLowerCase().split('.')
-                if(reqParts[1] === domainParts[1] && reqParts[2] === domainParts[2]) {
+            } else if (this.c.domain.includes('*')) {
+                const reqParts = req.headers.host.toLowerCase().split('.');
+                const domainParts = this.c.domain.toLowerCase().split('.');
+                if (reqParts[1] === domainParts[1] && reqParts[2] === domainParts[2]) {
                     next();
                 } else {
                     res.statusCode = 401;
@@ -114,7 +114,7 @@ class ShareXAPI {
         this.app.use((req, res, next) => {
             if (req.method === 'GET') {
                 const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                let file = req.path;
+                const file = req.path;
                 // Not ignoring these files causes bloat in the db
                 const ignored = ['/favicon.ico', '/assets/css/styles.min.css', '/highlight.pack.js', '/highlightjs-line-numbers.min.js', '/paste.css', '/atom-one-dark.css'];
                 let exists = this.db.get('files').find({ path: file }).value();
@@ -172,7 +172,7 @@ class ShareXAPI {
         });
         // All files in /uploads/ are publicly accessible via http
         this.app.use(express.static(`${__dirname}/uploads/`, {
-            extensions: this.c.admin.allowed.includes("*") ? null : this.c.admin.allowed,
+            extensions: this.c.admin.allowed.includes('*') ? null : this.c.admin.allowed,
         }));
         this.app.use(express.static(`${__dirname}/views/`, {
             extensions: ['css'],
@@ -234,32 +234,47 @@ class ShareXAPI {
    * @returns {void}
    */
     async startServer() {
-        if (this.c.secure) {
-        /** if the secure option is set to true in config,
-         *  it will boot in https so long as it detects
-         *  key.pem and cert.pem in the src directory
-         */
-            if (fs.existsSync(`${__dirname}/../key.pem`) && fs.existsSync(`${__dirname}/../cert.pem`)) {
-                const privateKey = fs.readFileSync(`${__dirname}/../key.pem`);
-                const certificate = fs.readFileSync(`${__dirname}/../cert.pem`);
-                https.createServer({
-                    key: privateKey,
-                    cert: certificate,
-                }, this.app).listen(this.c.securePort, '0.0.0.0');
+        if (!this.c.socketOnly || !this.c.socket) {
+            if (this.c.secure) {
+                /** if the secure option is set to true in config,
+                 *  it will boot in https so long as it detects
+                 *  key.pem and cert.pem in the src directory
+                 */
+                if (fs.existsSync(`${__dirname}/../key.pem`) && fs.existsSync(`${__dirname}/../cert.pem`)) {
+                    const privateKey = fs.readFileSync(`${__dirname}/../key.pem`);
+                    const certificate = fs.readFileSync(`${__dirname}/../cert.pem`);
+                    https.createServer({
+                        key: privateKey,
+                        cert: certificate,
+                    }, this.app).listen(this.c.securePort, '0.0.0.0');
+                } else {
+                    // CF Flexible SSL
+                    /** if no key & cert pem files are detected,
+                     * it will still run in secure mode (returning urls with https)
+                     * so that it's compatible with CF flexible SSL
+                     * and SSL configurations via a reverse proxy */
+                    this.app.listen(this.c.securePort, '0.0.0.0', () => {
+                        this.log.warning('Server using flexible SSL secure setting\nTo run a full SSL setting, ensure key.pem and cert.pem are in the /src folder');
+                    });
+                }
+                this.log.success(`Secure server listening on port ${this.c.securePort}`);
             } else {
-            // CF Flexible SSL
-            /** if no key & cert pem files are detected,
-             * it will still run in secure mode (returning urls with https)
-             * so that it's compatible with CF flexible SSL
-             * and SSL configurations via a reverse proxy */
-                this.app.listen(this.c.securePort, '0.0.0.0', () => {
-                    this.log.warning('Server using flexible SSL secure setting\nTo run a full SSL setting, ensure key.pem and cert.pem are in the /src folder');
+                this.app.listen(this.c.port, '0.0.0.0', () => {
+                    this.log.success(`Server listening on port ${this.c.port}`);
                 });
             }
-            this.log.success(`Secure server listening on port ${this.c.securePort}`);
-        } else {
-            this.app.listen(this.c.port, '0.0.0.0', () => {
-                this.log.success(`Server listening on port ${this.c.port}`);
+        }
+        if (this.c.socket) {
+            const socket = this.c.socket.toString();
+            // https://stackoverflow.com/a/21385803
+            fs.stat(socket, (err) => {
+                if (!err) { fs.unlinkSync(socket); }
+                this.app.listen(/** @type string */socket, () => {
+                    if (fs.chmodSync) {
+                        fs.chmodSync(socket, '777');
+                    }
+                    this.log.success(`Server listening on socket ${socket}`);
+                });
             });
         }
     }
