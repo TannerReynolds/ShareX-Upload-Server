@@ -9,7 +9,7 @@
     "express": "^4.16.4",
     "formidable": "^1.2.1",
     "fs-extra": "^9.0.0",
-    "helmet": "^4.0.0",
+    "helmet": "^6.0.0",
     "lowdb": "^1.0.0",
     "path": "^0.12.7",
     "remarkable": "^2.0.0",
