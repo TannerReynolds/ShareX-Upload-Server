@@ -1,5 +1,3 @@
-<img src="https://img.shields.io/badge/Hosting-Vultr-blue?style=flat-square&logo=server-fault&logo-color=white&link=https://qoilo.com/hosting" alt="Hosting"> <a href="https://www.guilded.gg/Tanners-Space?i=4WPKkDPd"><img src="https://img.shields.io/badge/Support%20Server-Guilded.gg-yellow?style=flat-square&link=https://www.guilded.gg/Tanners-Space?i=4WPKkDPd" alt="Guilded"></a>  <img src="https://img.shields.io/badge/Version-4.5.2-red?style=flat-square&link=https://qoilo.com/hosting" alt="Version">
-
 # ShareS - A Nodejs ShareX Upload Server
 [![Join Our Discord!](https://img.shields.io/badge/Join%20Our%20Discord!-5865F2?style=flat&logo=discord&logoColor=white&link=https://discord.gg/FWGKzpaszP)](https://discord.gg/FWGKzpaszP)
 ## Features
