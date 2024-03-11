@@ -46,6 +46,8 @@ You must fill this out for the webserver to work properly. Below explains the co
   "domain": "*.example.com", // Domain server will use. Will error if domain not used in request. Place "*" as the subdomain to enable wildcard subdomains for the webserver.
   "puploadKeyGenLength": 64, // Amount of characters server should use for pupload files
   "public": false, // Disables auth and does not render a password field for /upload
+  "socket": "", // socket path to listen eg. /tmp/shares.sock
+  "socketOnly": true, // do not listen via ip if socket is set (ignore options secure, port)
   "maxUploadSize": 50, // max upload size for non-admins using regular key in MB
   "markdown": true, // enables markdown rendering (upload whole .md file for render)
   "port": 80, // port to listen on
@@ -85,6 +87,7 @@ If you're configuring this webserver to run through an Nginx reverse proxy, make
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection 'upgrade';
 proxy_set_header Host $host;
+proxy_set_header X-Forwarded-For $remote_addr;
 proxy_cache_bypass $http_upgrade;
 ```
 This is generally some things you want to add to your config, and is what's actually required for ShareS to work properly. This is because ShareS returns uploads like `[http/https]://[requested url]/[filename]` and since you're running ShareS through a reverse proxy, unless you're passing along the *original* headers, ShareS is most likely just going to send you something like `http://[server's real ip address]/[filename]`

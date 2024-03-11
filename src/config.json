@@ -3,6 +3,8 @@
   "domain": "example.com",
   "puploadKeyGenLength": 64,
   "public": false,
+  "socket": "",
+  "socketOnly": true,
   "maxUploadSize": 50,
   "markdown": true,
   "port": 80,
